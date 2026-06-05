@@ -31,7 +31,6 @@ defmodule BigzWeb.UserLive.Registration do
             required
             phx-mounted={JS.focus()}
           />
-
           <.input
             field={@form[:email]}
             type="email"
@@ -47,7 +46,6 @@ defmodule BigzWeb.UserLive.Registration do
             autocomplete="new-password"
             required
           />
-
           <.input
             field={@form[:password_confirmation]}
             type="password"
@@ -55,7 +53,6 @@ defmodule BigzWeb.UserLive.Registration do
             autocomplete="new-password"
             required
           />
-
           <.button phx-disable-with="Criando conta..." class="btn btn-primary w-full">
             Criar conta
           </.button>
