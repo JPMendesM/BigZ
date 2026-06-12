@@ -44,6 +44,8 @@ defmodule BigzWeb.Router do
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
       live "/profile", UserLive.Profile, :edit
+      live "/habits/new", HabitLive.Index, :new
+      live "/habits/:id/edit", HabitLive.Index, :edit
     end
 
     post "/users/update-password", UserSessionController, :update_password
@@ -57,6 +59,7 @@ defmodule BigzWeb.Router do
       live "/users/register", UserLive.Registration, :new
       live "/users/log-in", UserLive.Login, :new
       live "/users/log-in/:token", UserLive.Confirmation, :new
+      live "/habits", HabitLive.Index, :index
     end
 
     post "/users/log-in", UserSessionController, :create
