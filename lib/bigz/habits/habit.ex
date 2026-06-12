@@ -9,6 +9,7 @@ defmodule Bigz.Habits.Habit do
     field :points, :integer
 
     belongs_to :user, Bigz.Accounts.User
+    has_many :checkins, Bigz.Habits.Checkin
 
     timestamps(type: :utc_datetime)
   end

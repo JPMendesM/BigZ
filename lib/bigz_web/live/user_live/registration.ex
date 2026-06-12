@@ -21,7 +21,7 @@ defmodule BigzWeb.UserLive.Registration do
             </:subtitle>
           </.header>
         </div>
-
+        
         <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
           <.input
             field={@form[:name]}

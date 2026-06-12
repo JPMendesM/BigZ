@@ -5,16 +5,25 @@ config :pbkdf2_elixir, :rounds, 1
 
 # Configure your database
 #
-# The MIX_TEST_PARTITION environment variable can be used
-# to provide built-in test partitioning in CI environment.
-# Run `mix help test` for more information.
-config :bigz, Bigz.Repo,
-  username: "postgres",
-  password: "admin",
-  hostname: "localhost",
-  database: "bigz_test#{System.get_env("MIX_TEST_PARTITION")}",
-  pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: System.schedulers_online() * 2
+# Uses DATABASE_URL if set (Supabase or any remote Postgres).
+# Falls back to local PostgreSQL for environments with a local instance.
+# Note: use the direct connection URL (port 5432), not the pooler (port 6543),
+# because Ecto.Adapters.SQL.Sandbox requires session-mode connections.
+if database_url = System.get_env("DATABASE_URL") do
+  config :bigz, Bigz.Repo,
+    url: database_url,
+    ssl: [verify: :verify_none],
+    pool: Ecto.Adapters.SQL.Sandbox,
+    pool_size: System.schedulers_online() * 2
+else
+  config :bigz, Bigz.Repo,
+    username: "postgres",
+    password: "admin",
+    hostname: "localhost",
+    database: "bigz_test#{System.get_env("MIX_TEST_PARTITION")}",
+    pool: Ecto.Adapters.SQL.Sandbox,
+    pool_size: System.schedulers_online() * 2
+end
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.

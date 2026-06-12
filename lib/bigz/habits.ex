@@ -5,6 +5,7 @@ defmodule Bigz.Habits do
 
   import Ecto.Query, warn: false
   alias Bigz.Repo
+  alias Bigz.Habits.Checkin
   alias Bigz.Habits.Habit
 
   @doc """
@@ -78,5 +79,24 @@ defmodule Bigz.Habits do
   """
   def change_habit(_current_scope, %Habit{} = habit, attrs \\ %{}) do
     Habit.changeset(habit, attrs)
+  end
+
+  @doc """
+  Registers a check-in for the authenticated user on the given habit for today.
+
+  `checkin_date` is set server-side via `Date.utc_today/0`; "same day" is
+  evaluated in UTC. No user-supplied date or user_id is accepted.
+
+  Returns `{:ok, checkin}` on success or `{:error, changeset}` on failure.
+  The changeset error message for a duplicate is "Você já registrou este hábito hoje."
+  """
+  def create_checkin(current_scope, %Habit{} = habit) do
+    %Checkin{
+      user_id: current_scope.user.id,
+      habit_id: habit.id,
+      checkin_date: Date.utc_today()
+    }
+    |> Checkin.changeset(%{})
+    |> Repo.insert()
   end
 end

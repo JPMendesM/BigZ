@@ -12,12 +12,12 @@ defmodule BigzWeb.UserLive.Profile do
           Meu Perfil
           <:subtitle>Visualize e edite suas informações pessoais.</:subtitle>
         </.header>
-
+        
         <div class="mt-6 rounded-lg border border-base-300 bg-base-100 p-6">
           <p class="mb-2"><strong>Nome:</strong> {@user.name}</p>
-
+          
           <p class="mb-6"><strong>Pontuação total:</strong> {@user.score || 0} pontos</p>
-
+          
           <.form for={@form} id="profile_form" phx-submit="save" phx-change="validate">
             <.input
               field={@form[:name]}
