@@ -5,10 +5,12 @@
         <h1 class="text-3xl font-extrabold text-base-content tracking-tight flex items-center gap-3">
           🌿 Hábitos Sustentáveis
         </h1>
+        
         <p class="text-sm text-base-content/60 mt-1">
           Explore e gerencie hábitos ecológicos cotidianos. Acumule pontos e ajude a comunidade!
         </p>
       </div>
+      
       <div>
         <%= if @current_scope && @current_scope.user do %>
           <.link
@@ -29,8 +31,7 @@
         <% end %>
       </div>
     </div>
-
-    <%!-- Category Filters --%>
+     <%!-- Category Filters --%>
     <div class="flex flex-wrap items-center gap-2 bg-base-100 p-3 rounded-2xl border border-base-200 shadow-sm">
       <span class="text-xs font-bold uppercase tracking-wider text-base-content/40 px-2">
         Filtrar:
@@ -58,8 +59,7 @@
         </.link>
       <% end %>
     </div>
-
-    <%!-- Habits Stream List --%>
+     <%!-- Habits Stream List --%>
     <div id="habits" phx-update="stream" class="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
       <div
         id="habits-empty"
@@ -67,11 +67,12 @@
       >
         <.icon name="hero-magnifying-glass" class="size-12 mx-auto text-base-content/30 mb-3" />
         <h3 class="text-lg font-bold text-base-content">Nenhum hábito cadastrado</h3>
+        
         <p class="text-sm text-base-content/50 mt-1">
           Seja o primeiro a sugerir um hábito sustentável para esta categoria!
         </p>
       </div>
-
+      
       <div
         :for={{id, habit} <- @streams.habits}
         id={id}
@@ -96,17 +97,17 @@
                 {habit.category}
               </span>
               <div class="flex items-center gap-1 text-success font-extrabold text-sm bg-success/10 px-2.5 py-0.5 rounded-lg border border-success/20">
-                <.icon name="hero-bolt" class="size-4" />
-                <span>+{habit.points} pts</span>
+                <.icon name="hero-bolt" class="size-4" /> <span>+{habit.points} pts</span>
               </div>
             </div>
-
+            
             <h3 class="text-lg font-bold text-base-content mt-3 line-clamp-1">{habit.name}</h3>
+            
             <p class="text-sm text-base-content/60 mt-2 line-clamp-3 leading-relaxed">
               {habit.description || "Sem descrição detalhada."}
             </p>
           </div>
-
+          
           <div class="flex items-center justify-between border-t border-base-200 pt-4 mt-auto">
             <div class="flex items-center gap-2 text-xs text-base-content/60">
               <div class="avatar placeholder">
@@ -114,6 +115,7 @@
                   {String.slice(habit.user.name || "U", 0, 2)}
                 </div>
               </div>
+              
               <span class="truncate max-w-[120px] sm:max-w-[180px]">
                 <%= if @current_scope && @current_scope.user && habit.user_id == @current_scope.user.id do %>
                   <strong>Você</strong>
@@ -122,7 +124,7 @@
                 <% end %>
               </span>
             </div>
-
+            
             <div
               :if={
                 @current_scope && @current_scope.user && habit.user_id == @current_scope.user.id
@@ -144,12 +146,20 @@
               </.link>
             </div>
           </div>
+          
+          <%= if @current_scope && @current_scope.user do %>
+            <.link
+              navigate={~p"/habits/#{habit.id}/checkin"}
+              class="btn btn-success btn-sm w-full mt-1 gap-2"
+            >
+              <.icon name="hero-check-circle" class="size-4" /> Registrar Check-in
+            </.link>
+          <% end %>
         </div>
       </div>
     </div>
   </div>
-
-  <%!-- Modal Form Overlay for Create/Edit Actions --%>
+   <%!-- Modal Form Overlay for Create/Edit Actions --%>
   <%= if @live_action in [:new, :edit] do %>
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs">
       <div class="bg-base-100 border border-base-300 rounded-3xl shadow-2xl w-full max-w-lg p-6 mx-4 relative animate-in fade-in zoom-in-95 duration-200">
@@ -157,11 +167,12 @@
           <h2 class="text-xl font-bold text-base-content flex items-center gap-2">
             🌱 {@page_title}
           </h2>
+          
           <.link navigate={~p"/habits"} class="btn btn-ghost btn-circle btn-sm">
             <.icon name="hero-x-mark" class="size-5" />
           </.link>
         </div>
-
+        
         <.form :let={f} for={@form} phx-change="validate" phx-submit="save" class="space-y-4">
           <.input
             field={f[:name]}
@@ -177,7 +188,6 @@
             placeholder="Descreva o hábito e como ele gera impacto sustentável..."
             rows={3}
           />
-
           <div class="grid grid-cols-2 gap-4">
             <.input
               field={f[:category]}
@@ -202,7 +212,7 @@
               min="1"
             />
           </div>
-
+          
           <div class="flex justify-end gap-2 mt-8 pt-4 border-t border-base-200">
             <.link navigate={~p"/habits"} class="btn btn-ghost rounded-xl">Cancelar</.link>
             <.button variant="primary" class="rounded-xl px-5" phx-disable-with="Salvando...">

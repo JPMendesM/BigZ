@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pg_isready -h localhost -p 5432)",
+      "PowerShell($env:DATABASE_URL)",
+      "Bash(docker --version)"
+    ]
+  }
+}

@@ -46,6 +46,7 @@ defmodule BigzWeb.Router do
       live "/profile", UserLive.Profile, :edit
       live "/habits/new", HabitLive.Index, :new
       live "/habits/:id/edit", HabitLive.Index, :edit
+      live "/habits/:habit_id/checkin", CheckinLive.New, :new
     end
 
     post "/users/update-password", UserSessionController, :update_password
