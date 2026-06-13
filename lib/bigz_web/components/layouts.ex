@@ -67,7 +67,9 @@ defmodule BigzWeb.Layouts do
   slot :inner_block, required: true
 
   def app(assigns) do
-    assigns = assign(assigns, :user, assigns[:current_scope] && assigns.current_scope.user)
+    user = assigns[:current_scope] && assigns.current_scope.user
+    topbar_score = if user, do: Bigz.Habits.sum_user_points(assigns.current_scope), else: 0
+    assigns = assigns |> assign(:user, user) |> assign(:topbar_score, topbar_score)
 
     ~H"""
     <div class="min-h-screen bg-base-200">
@@ -125,7 +127,7 @@ defmodule BigzWeb.Layouts do
           <%= if @user do %>
             <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-success/10 text-success font-bold text-sm border border-success/20">
               <.icon name="hero-bolt" class="size-4" />
-              <span>{@user.score || 0} pts</span>
+              <span>{@topbar_score} pts</span>
             </div>
 
             <details class="dropdown dropdown-end">
@@ -202,6 +204,13 @@ defmodule BigzWeb.Layouts do
         icon="hero-sparkles"
         label="Hábitos"
         active={@active == :habits}
+      />
+      <.nav_item
+        :if={@user}
+        navigate={~p"/comunidade"}
+        icon="hero-user-group"
+        label="Comunidade"
+        active={@active == :community}
       />
       <.nav_item
         :if={@user}

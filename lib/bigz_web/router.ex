@@ -42,6 +42,7 @@ defmodule BigzWeb.Router do
     live_session :require_authenticated_user,
       on_mount: [{BigzWeb.UserAuth, :require_authenticated}] do
       live "/inicio", HomeLive.Index, :index
+      live "/comunidade", CommunityLive.Index, :index
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
       live "/profile", UserLive.Profile, :edit

@@ -2,6 +2,7 @@ defmodule BigzWeb.UserLive.Profile do
   use BigzWeb, :live_view
 
   alias Bigz.Accounts
+  alias Bigz.Habits
 
   @impl true
   def render(assigns) do
@@ -85,10 +86,10 @@ defmodule BigzWeb.UserLive.Profile do
         <div class="grid sm:grid-cols-2 gap-4">
           <.stat_card
             label="Pontuação total"
-            value={@user.score || 0}
+            value={@total_points}
             icon="hero-bolt"
             tone="success"
-            hint="pontos acumulados"
+            hint="pontos acumulados via check-ins"
           />
           <.link
             navigate={~p"/users/settings"}
@@ -113,13 +114,15 @@ defmodule BigzWeb.UserLive.Profile do
 
   @impl true
   def mount(_params, _session, socket) do
-    user = socket.assigns.current_scope.user
+    scope = socket.assigns.current_scope
+    user = scope.user
     changeset = Accounts.change_user_profile(user)
 
     {:ok,
      socket
      |> assign(:page_title, "Meu perfil")
      |> assign(:user, user)
+     |> assign(:total_points, Habits.sum_user_points(scope))
      |> assign(:editing, false)
      |> assign_form(changeset)}
   end
