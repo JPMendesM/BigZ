@@ -1,47 +1,41 @@
-<Layouts.app flash={@flash} current_scope={@current_scope}>
+<Layouts.app flash={@flash} current_scope={@current_scope} active={:habits}>
   <div class="space-y-8">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-base-200 pb-6">
+    <%!-- Page header --%>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-extrabold text-base-content tracking-tight flex items-center gap-3">
-          🌿 Hábitos Sustentáveis
-        </h1>
-        
-        <p class="text-sm text-base-content/60 mt-1">
-          Explore e gerencie hábitos ecológicos cotidianos. Acumule pontos e ajude a comunidade!
+        <h1 class="text-3xl font-extrabold tracking-tight">Hábitos Sustentáveis</h1>
+        <p class="text-sm text-base-content/60 mt-1 max-w-2xl">
+          Explore e gerencie hábitos ecológicos do dia a dia. Acumule pontos e inspire a comunidade.
         </p>
       </div>
-      
-      <div>
+
+      <div class="shrink-0">
         <%= if @current_scope && @current_scope.user do %>
-          <.link
-            navigate={~p"/habits/new"}
-            class="btn btn-primary shadow-md hover:shadow-lg transition flex items-center gap-2"
-          >
-            <.icon name="hero-plus-circle" class="size-5" /> Cadastrar Hábito
+          <.link navigate={~p"/habits/new"} class="btn btn-primary gap-2">
+            <.icon name="hero-plus" class="size-5" /> Cadastrar Hábito
           </.link>
         <% else %>
           <div class="tooltip tooltip-bottom" data-tip="Faça login para cadastrar hábitos">
-            <.link
-              navigate={~p"/users/log-in"}
-              class="btn btn-primary btn-disabled opacity-50 flex items-center gap-2"
-            >
-              <.icon name="hero-plus-circle" class="size-5" /> Cadastrar Hábito
-            </.link>
+            <span class="btn btn-primary btn-disabled gap-2 opacity-60">
+              <.icon name="hero-plus" class="size-5" /> Cadastrar Hábito
+            </span>
           </div>
         <% end %>
       </div>
     </div>
-     <%!-- Category Filters --%>
-    <div class="flex flex-wrap items-center gap-2 bg-base-100 p-3 rounded-2xl border border-base-200 shadow-sm">
-      <span class="text-xs font-bold uppercase tracking-wider text-base-content/40 px-2">
-        Filtrar:
+
+    <%!-- Category filters (segmented chips) --%>
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-xs font-bold uppercase tracking-wider text-base-content/40 mr-1">
+        Filtrar
       </span>
       <.link
         patch={~p"/habits"}
         class={[
-          "btn btn-sm rounded-full transition-all duration-200",
-          is_nil(@category_filter) && "btn-primary px-4 shadow-sm",
-          !is_nil(@category_filter) && "btn-ghost text-base-content/70 hover:bg-base-200"
+          "px-3.5 py-1.5 text-sm font-medium rounded-full border transition-colors",
+          is_nil(@category_filter) && "bg-primary text-primary-content border-primary",
+          !is_nil(@category_filter) &&
+            "bg-base-100 border-base-300 text-base-content/70 hover:bg-base-200"
         ]}
       >
         Todos
@@ -50,73 +44,70 @@
         <.link
           patch={~p"/habits?category=#{cat}"}
           class={[
-            "btn btn-sm rounded-full transition-all duration-200",
-            @category_filter == cat && "btn-primary px-4 shadow-sm",
-            @category_filter != cat && "btn-ghost text-base-content/70 hover:bg-base-200"
+            "px-3.5 py-1.5 text-sm font-medium rounded-full border transition-colors capitalize",
+            @category_filter == cat && "bg-primary text-primary-content border-primary",
+            @category_filter != cat &&
+              "bg-base-100 border-base-300 text-base-content/70 hover:bg-base-200"
           ]}
         >
-          {String.capitalize(cat)}
+          {cat}
         </.link>
       <% end %>
     </div>
-     <%!-- Habits Stream List --%>
-    <div id="habits" phx-update="stream" class="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
+
+    <%!-- Habits grid --%>
+    <div id="habits" phx-update="stream" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
       <div
         id="habits-empty"
-        class="hidden only:block text-center py-12 col-span-full bg-base-100 border border-dashed border-base-300 rounded-3xl p-8 shadow-inner"
+        class="hidden only:block col-span-full text-center py-16 bg-base-100 border border-dashed border-base-300 rounded-box"
       >
-        <.icon name="hero-magnifying-glass" class="size-12 mx-auto text-base-content/30 mb-3" />
-        <h3 class="text-lg font-bold text-base-content">Nenhum hábito cadastrado</h3>
-        
+        <span class="grid place-items-center size-14 rounded-full bg-base-200 text-base-content/40 mx-auto">
+          <.icon name="hero-magnifying-glass" class="size-7" />
+        </span>
+        <h3 class="text-lg font-bold mt-4">Nenhum hábito por aqui</h3>
         <p class="text-sm text-base-content/50 mt-1">
-          Seja o primeiro a sugerir um hábito sustentável para esta categoria!
+          Seja o primeiro a sugerir um hábito sustentável para esta categoria.
         </p>
       </div>
-      
+
       <div
         :for={{id, habit} <- @streams.habits}
         id={id}
-        class="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 rounded-2xl overflow-hidden"
+        class="bz-lift card bg-base-100 border border-base-300 shadow-sm hover:shadow-md rounded-box overflow-hidden"
       >
-        <div class="card-body p-6 flex flex-col justify-between h-full space-y-4">
-          <div>
-            <div class="flex justify-between items-start">
-              <span class={[
-                "px-2.5 py-1 text-[11px] font-bold tracking-wide rounded-full uppercase",
-                habit.category == "alimentação" &&
-                  "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-                habit.category == "transporte" &&
-                  "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
-                habit.category == "energia" &&
-                  "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
-                habit.category == "água" &&
-                  "bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300",
-                habit.category == "resíduos" &&
-                  "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300"
-              ]}>
-                {habit.category}
-              </span>
-              <div class="flex items-center gap-1 text-success font-extrabold text-sm bg-success/10 px-2.5 py-0.5 rounded-lg border border-success/20">
-                <.icon name="hero-bolt" class="size-4" /> <span>+{habit.points} pts</span>
-              </div>
+        <div class="card-body p-5 gap-0 flex flex-col h-full">
+          <div class="flex items-start justify-between gap-2">
+            <span class={[
+              "px-2.5 py-1 text-[11px] font-bold tracking-wide rounded-full uppercase",
+              habit.category == "alimentação" &&
+                "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+              habit.category == "transporte" &&
+                "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
+              habit.category == "energia" &&
+                "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+              habit.category == "água" &&
+                "bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300",
+              habit.category == "resíduos" &&
+                "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300"
+            ]}>
+              {habit.category}
+            </span>
+            <div class="flex items-center gap-1 text-success font-extrabold text-sm bg-success/10 px-2.5 py-0.5 rounded-lg border border-success/20">
+              <.icon name="hero-bolt" class="size-4" /> <span>+{habit.points} pts</span>
             </div>
-            
-            <h3 class="text-lg font-bold text-base-content mt-3 line-clamp-1">{habit.name}</h3>
-            
-            <p class="text-sm text-base-content/60 mt-2 line-clamp-3 leading-relaxed">
-              {habit.description || "Sem descrição detalhada."}
-            </p>
           </div>
-          
-          <div class="flex items-center justify-between border-t border-base-200 pt-4 mt-auto">
-            <div class="flex items-center gap-2 text-xs text-base-content/60">
-              <div class="avatar placeholder">
-                <div class="bg-neutral text-neutral-content rounded-full size-6 flex items-center justify-center uppercase font-bold text-[10px]">
-                  {String.slice(habit.user.name || "U", 0, 2)}
-                </div>
-              </div>
-              
-              <span class="truncate max-w-[120px] sm:max-w-[180px]">
+
+          <h3 class="text-lg font-bold mt-3 line-clamp-1">{habit.name}</h3>
+          <p class="text-sm text-base-content/60 mt-1.5 line-clamp-3 leading-relaxed">
+            {habit.description || "Sem descrição detalhada."}
+          </p>
+
+          <div class="flex items-center justify-between border-t border-base-200 pt-4 mt-4">
+            <div class="flex items-center gap-2 text-xs text-base-content/60 min-w-0">
+              <span class="grid place-items-center size-6 rounded-full bg-neutral text-neutral-content uppercase font-bold text-[10px] shrink-0">
+                {String.slice(habit.user.name || "U", 0, 2)}
+              </span>
+              <span class="truncate">
                 <%= if @current_scope && @current_scope.user && habit.user_id == @current_scope.user.id do %>
                   <strong>Você</strong>
                 <% else %>
@@ -124,33 +115,35 @@
                 <% end %>
               </span>
             </div>
-            
+
             <div
               :if={
                 @current_scope && @current_scope.user && habit.user_id == @current_scope.user.id
               }
-              class="flex gap-1"
+              class="flex gap-1 shrink-0"
             >
               <.link
                 patch={~p"/habits/#{habit.id}/edit"}
                 class="btn btn-ghost btn-circle btn-xs text-info hover:bg-info/10"
+                aria-label="Editar hábito"
               >
-                <.icon name="hero-pencil-square" class="size-4.5" />
+                <.icon name="hero-pencil-square" class="size-4" />
               </.link>
               <.link
                 phx-click={JS.push("delete", value: %{id: habit.id}) |> JS.hide(to: "##{id}")}
-                data-confirm="Deseja realmente remover este hábito?"
+                data-confirm="Deseja realmente remover este hábito? Esta ação não pode ser desfeita."
                 class="btn btn-ghost btn-circle btn-xs text-error hover:bg-error/10"
+                aria-label="Remover hábito"
               >
-                <.icon name="hero-trash" class="size-4.5" />
+                <.icon name="hero-trash" class="size-4" />
               </.link>
             </div>
           </div>
-          
+
           <%= if @current_scope && @current_scope.user do %>
             <.link
               navigate={~p"/habits/#{habit.id}/checkin"}
-              class="btn btn-success btn-sm w-full mt-1 gap-2"
+              class="btn btn-success btn-sm w-full mt-4 gap-2"
             >
               <.icon name="hero-check-circle" class="size-4" /> Registrar Check-in
             </.link>
@@ -159,25 +152,34 @@
       </div>
     </div>
   </div>
-   <%!-- Modal Form Overlay for Create/Edit Actions --%>
+
+  <%!-- Create / Edit modal --%>
   <%= if @live_action in [:new, :edit] do %>
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs">
-      <div class="bg-base-100 border border-base-300 rounded-3xl shadow-2xl w-full max-w-lg p-6 mx-4 relative animate-in fade-in zoom-in-95 duration-200">
-        <div class="flex justify-between items-center mb-6 border-b border-base-200 pb-3">
-          <h2 class="text-xl font-bold text-base-content flex items-center gap-2">
-            🌱 {@page_title}
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral/50 backdrop-blur-sm bz-animate-fade-in"
+      phx-window-keydown={JS.navigate(~p"/habits")}
+      phx-key="escape"
+    >
+      <div class="bg-base-100 border border-base-300 rounded-box shadow-xl w-full max-w-lg p-6 bz-animate-fade-up">
+        <div class="flex justify-between items-center mb-6 border-b border-base-200 pb-4">
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <.icon name="hero-sparkles" class="size-5 text-primary" /> {@page_title}
           </h2>
-          
-          <.link navigate={~p"/habits"} class="btn btn-ghost btn-circle btn-sm">
+
+          <.link
+            navigate={~p"/habits"}
+            class="btn btn-ghost btn-circle btn-sm"
+            aria-label="Fechar"
+          >
             <.icon name="hero-x-mark" class="size-5" />
           </.link>
         </div>
-        
+
         <.form :let={f} for={@form} phx-change="validate" phx-submit="save" class="space-y-4">
           <.input
             field={f[:name]}
             label="Nome do Hábito"
-            placeholder="Ex: Reduzir tempo de banho"
+            placeholder="Ex: Reduzir o tempo de banho"
             required
             autocomplete="off"
           />
@@ -185,7 +187,7 @@
             field={f[:description]}
             type="textarea"
             label="Descrição"
-            placeholder="Descreva o hábito e como ele gera impacto sustentável..."
+            placeholder="Descreva o hábito e o impacto sustentável que ele gera..."
             rows={3}
           />
           <div class="grid grid-cols-2 gap-4">
@@ -212,10 +214,10 @@
               min="1"
             />
           </div>
-          
-          <div class="flex justify-end gap-2 mt-8 pt-4 border-t border-base-200">
-            <.link navigate={~p"/habits"} class="btn btn-ghost rounded-xl">Cancelar</.link>
-            <.button variant="primary" class="rounded-xl px-5" phx-disable-with="Salvando...">
+
+          <div class="flex justify-end gap-2 pt-4 border-t border-base-200">
+            <.link navigate={~p"/habits"} class="btn btn-ghost">Cancelar</.link>
+            <.button variant="primary" class="btn btn-primary px-5" phx-disable-with="Salvando...">
               Salvar Hábito
             </.button>
           </div>

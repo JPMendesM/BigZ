@@ -8,57 +8,88 @@ defmodule BigzWeb.UserLive.Settings do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="text-center">
-        <.header>
-          Account Settings
-          <:subtitle>Manage your account email address and password settings</:subtitle>
-        </.header>
+    <Layouts.app flash={@flash} current_scope={@current_scope} active={:settings}>
+      <div class="mx-auto max-w-2xl space-y-6">
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight">Conta e segurança</h1>
+          <p class="text-sm text-base-content/60 mt-1">
+            Gerencie seu e-mail de acesso e sua senha.
+          </p>
+        </div>
+
+        <%!-- E-mail --%>
+        <div class="rounded-box bg-base-100 border border-base-300 shadow-sm p-6">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="grid place-items-center size-9 rounded-field bg-secondary/10 text-secondary">
+              <.icon name="hero-envelope" class="size-5" />
+            </span>
+            <h2 class="text-lg font-bold">E-mail</h2>
+          </div>
+          <.form
+            for={@email_form}
+            id="email_form"
+            phx-submit="update_email"
+            phx-change="validate_email"
+          >
+            <.input
+              field={@email_form[:email]}
+              type="email"
+              label="Email"
+              autocomplete="username"
+              spellcheck="false"
+              required
+            />
+            <.button variant="primary" class="btn btn-primary" phx-disable-with="Changing...">
+              Change Email
+            </.button>
+          </.form>
+        </div>
+
+        <%!-- Senha --%>
+        <div class="rounded-box bg-base-100 border border-base-300 shadow-sm p-6">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="grid place-items-center size-9 rounded-field bg-primary/10 text-primary">
+              <.icon name="hero-lock-closed" class="size-5" />
+            </span>
+            <h2 class="text-lg font-bold">Senha</h2>
+          </div>
+          <.form
+            for={@password_form}
+            id="password_form"
+            action={~p"/users/update-password"}
+            method="post"
+            phx-change="validate_password"
+            phx-submit="update_password"
+            phx-trigger-action={@trigger_submit}
+          >
+            <input
+              name={@password_form[:email].name}
+              type="hidden"
+              id="hidden_user_email"
+              spellcheck="false"
+              value={@current_email}
+            />
+            <.input
+              field={@password_form[:password]}
+              type="password"
+              label="New password"
+              autocomplete="new-password"
+              spellcheck="false"
+              required
+            />
+            <.input
+              field={@password_form[:password_confirmation]}
+              type="password"
+              label="Confirm new password"
+              autocomplete="new-password"
+              spellcheck="false"
+            />
+            <.button variant="primary" class="btn btn-primary" phx-disable-with="Saving...">
+              Save Password
+            </.button>
+          </.form>
+        </div>
       </div>
-      
-      <.form for={@email_form} id="email_form" phx-submit="update_email" phx-change="validate_email">
-        <.input
-          field={@email_form[:email]}
-          type="email"
-          label="Email"
-          autocomplete="username"
-          spellcheck="false"
-          required
-        /> <.button variant="primary" phx-disable-with="Changing...">Change Email</.button>
-      </.form>
-       <div class="divider" />
-      <.form
-        for={@password_form}
-        id="password_form"
-        action={~p"/users/update-password"}
-        method="post"
-        phx-change="validate_password"
-        phx-submit="update_password"
-        phx-trigger-action={@trigger_submit}
-      >
-        <input
-          name={@password_form[:email].name}
-          type="hidden"
-          id="hidden_user_email"
-          spellcheck="false"
-          value={@current_email}
-        />
-        <.input
-          field={@password_form[:password]}
-          type="password"
-          label="New password"
-          autocomplete="new-password"
-          spellcheck="false"
-          required
-        />
-        <.input
-          field={@password_form[:password_confirmation]}
-          type="password"
-          label="Confirm new password"
-          autocomplete="new-password"
-          spellcheck="false"
-        /> <.button variant="primary" phx-disable-with="Saving...">Save Password</.button>
-      </.form>
     </Layouts.app>
     """
   end

@@ -6,37 +6,40 @@ defmodule BigzWeb.UserLive.Login do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="mx-auto max-w-sm space-y-4">
-        <div class="text-center">
-          <.header>
-            <p>Log in</p>
-            
-            <:subtitle>
-              <%= if @current_scope do %>
-                You need to reauthenticate to perform sensitive actions on your account.
-              <% else %>
-                Don't have an account? <.link
-                  navigate={~p"/users/register"}
-                  class="font-semibold text-brand hover:underline"
-                  phx-no-format
-                >Sign up</.link> for an account now.
-              <% end %>
-            </:subtitle>
-          </.header>
+    <Layouts.auth flash={@flash} current_scope={@current_scope}>
+      <:actions>
+        <.link :if={!@current_scope} navigate={~p"/users/register"} class="btn btn-ghost btn-sm">
+          Register
+        </.link>
+      </:actions>
+
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-2xl font-extrabold tracking-tight">Entrar</h1>
+          <p class="text-sm text-base-content/60 mt-1">
+            <%= if @current_scope do %>
+              You need to reauthenticate to perform sensitive actions on your account.
+            <% else %>
+              Ainda não tem conta? <.link
+                navigate={~p"/users/register"}
+                class="font-semibold text-primary hover:underline"
+                phx-no-format
+              >Sign up</.link> e comece agora.
+            <% end %>
+          </p>
         </div>
-        
+
         <div :if={local_mail_adapter?()} class="alert alert-info">
           <.icon name="hero-information-circle" class="size-6 shrink-0" />
           <div>
             <p>You are running the local mail adapter.</p>
-            
+
             <p>
               To see sent emails, visit <.link href="/dev/mailbox" class="underline">the mailbox page</.link>.
             </p>
           </div>
         </div>
-        
+
         <.form
           :let={f}
           for={@form}
@@ -58,9 +61,9 @@ defmodule BigzWeb.UserLive.Login do
             Log in with email <span aria-hidden="true">→</span>
           </.button>
         </.form>
-        
-        <div class="divider">or</div>
-        
+
+        <div class="divider text-base-content/40">ou</div>
+
         <.form
           :let={f}
           for={@form}
@@ -81,7 +84,7 @@ defmodule BigzWeb.UserLive.Login do
           <.input
             field={@form[:password]}
             type="password"
-            label="Password"
+            label="Senha"
             autocomplete="current-password"
             spellcheck="false"
           />
@@ -91,7 +94,7 @@ defmodule BigzWeb.UserLive.Login do
           <.button class="btn btn-primary btn-soft w-full mt-2">Log in only this time</.button>
         </.form>
       </div>
-    </Layouts.app>
+    </Layouts.auth>
     """
   end
 
