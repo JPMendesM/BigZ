@@ -99,4 +99,41 @@ defmodule Bigz.Habits do
     |> Checkin.changeset(%{})
     |> Repo.insert()
   end
+
+  @doc """
+  Returns the total number of habits available in the catalog.
+  """
+  def count_habits(_current_scope \\ nil) do
+    Repo.aggregate(Habit, :count, :id)
+  end
+
+  @doc """
+  Returns the number of habits created by the user in the given scope.
+  """
+  def count_user_habits(current_scope) do
+    user_id = current_scope.user.id
+    Repo.aggregate(from(h in Habit, where: h.user_id == ^user_id), :count, :id)
+  end
+
+  @doc """
+  Returns the total number of check-ins registered by the user in the given scope.
+  """
+  def count_user_checkins(current_scope) do
+    user_id = current_scope.user.id
+    Repo.aggregate(from(c in Checkin, where: c.user_id == ^user_id), :count, :id)
+  end
+
+  @doc """
+  Returns the number of check-ins the user registered today (UTC).
+  """
+  def count_user_checkins_today(current_scope) do
+    user_id = current_scope.user.id
+    today = Date.utc_today()
+
+    Repo.aggregate(
+      from(c in Checkin, where: c.user_id == ^user_id and c.checkin_date == ^today),
+      :count,
+      :id
+    )
+  end
 end

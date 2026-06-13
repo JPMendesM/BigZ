@@ -27,7 +27,7 @@ defmodule BigzWeb.HabitLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "EcoHabits - Hábitos Sustentáveis")
+    |> assign(:page_title, "Hábitos Sustentáveis")
     |> assign(:habit, nil)
   end
 

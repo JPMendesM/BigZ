@@ -7,21 +7,24 @@ defmodule BigzWeb.UserLive.Registration do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="mx-auto max-w-sm">
-        <div class="text-center">
-          <.header>
-            Criar conta
-            <:subtitle>
-              Já possui cadastro?
-              <.link navigate={~p"/users/log-in"} class="font-semibold text-brand hover:underline">
-                Entrar
-              </.link>
-              agora.
-            </:subtitle>
-          </.header>
+    <Layouts.auth flash={@flash} current_scope={@current_scope}>
+      <:actions>
+        <.link navigate={~p"/users/log-in"} class="btn btn-ghost btn-sm">Log in</.link>
+      </:actions>
+
+      <div class="space-y-6">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-primary">Register</p>
+          <h1 class="text-2xl font-extrabold tracking-tight mt-1">Criar sua conta</h1>
+          <p class="text-sm text-base-content/60 mt-1">
+            Já possui cadastro?
+            <.link navigate={~p"/users/log-in"} class="font-semibold text-primary hover:underline">
+              Entrar
+            </.link>
+            agora.
+          </p>
         </div>
-        
+
         <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
           <.input
             field={@form[:name]}
@@ -58,7 +61,7 @@ defmodule BigzWeb.UserLive.Registration do
           </.button>
         </.form>
       </div>
-    </Layouts.app>
+    </Layouts.auth>
     """
   end
 

@@ -3,7 +3,11 @@
     "allow": [
       "Bash(pg_isready -h localhost -p 5432)",
       "PowerShell($env:DATABASE_URL)",
-      "Bash(docker --version)"
+      "Bash(docker --version)",
+      "PowerShell(Copy-Item 'images\\\\big-z-logo.png' 'priv\\\\static\\\\images\\\\big-z-logo.png' -Force)",
+      "PowerShell(Copy-Item 'images\\\\big-z-logo-icon.png' 'priv\\\\static\\\\images\\\\big-z-logo-icon.png' -Force)",
+      "PowerShell(mix tailwind bigz 2>&1)",
+      "PowerShell(git stat 2>$null; git --no-pager diff --stat; Write-Output \"=== untracked ===\"; git status --porcelain | Where-Object { $_ -match '^\\\\?\\\\?' })"
     ]
   }
 }
