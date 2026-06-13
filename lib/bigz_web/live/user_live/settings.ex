@@ -12,12 +12,10 @@ defmodule BigzWeb.UserLive.Settings do
       <div class="mx-auto max-w-2xl space-y-6">
         <div>
           <h1 class="text-3xl font-extrabold tracking-tight">Conta e segurança</h1>
-          <p class="text-sm text-base-content/60 mt-1">
-            Gerencie seu e-mail de acesso e sua senha.
-          </p>
+          
+          <p class="text-sm text-base-content/60 mt-1">Gerencie seu e-mail de acesso e sua senha.</p>
         </div>
-
-        <%!-- E-mail --%>
+         <%!-- E-mail --%>
         <div class="rounded-box bg-base-100 border border-base-300 shadow-sm p-6">
           <div class="flex items-center gap-2 mb-4">
             <span class="grid place-items-center size-9 rounded-field bg-secondary/10 text-secondary">
@@ -25,6 +23,7 @@ defmodule BigzWeb.UserLive.Settings do
             </span>
             <h2 class="text-lg font-bold">E-mail</h2>
           </div>
+          
           <.form
             for={@email_form}
             id="email_form"
@@ -39,13 +38,12 @@ defmodule BigzWeb.UserLive.Settings do
               spellcheck="false"
               required
             />
-            <.button variant="primary" class="btn btn-primary" phx-disable-with="Changing...">
-              Change Email
+            <.button variant="primary" class="btn btn-primary" phx-disable-with="Alterando...">
+              Alterar e-mail
             </.button>
           </.form>
         </div>
-
-        <%!-- Senha --%>
+         <%!-- Senha --%>
         <div class="rounded-box bg-base-100 border border-base-300 shadow-sm p-6">
           <div class="flex items-center gap-2 mb-4">
             <span class="grid place-items-center size-9 rounded-field bg-primary/10 text-primary">
@@ -53,6 +51,7 @@ defmodule BigzWeb.UserLive.Settings do
             </span>
             <h2 class="text-lg font-bold">Senha</h2>
           </div>
+          
           <.form
             for={@password_form}
             id="password_form"
@@ -72,7 +71,7 @@ defmodule BigzWeb.UserLive.Settings do
             <.input
               field={@password_form[:password]}
               type="password"
-              label="New password"
+              label="Nova senha"
               autocomplete="new-password"
               spellcheck="false"
               required
@@ -80,12 +79,12 @@ defmodule BigzWeb.UserLive.Settings do
             <.input
               field={@password_form[:password_confirmation]}
               type="password"
-              label="Confirm new password"
+              label="Confirmar nova senha"
               autocomplete="new-password"
               spellcheck="false"
             />
-            <.button variant="primary" class="btn btn-primary" phx-disable-with="Saving...">
-              Save Password
+            <.button variant="primary" class="btn btn-primary" phx-disable-with="Salvando...">
+              Salvar senha
             </.button>
           </.form>
         </div>
@@ -99,10 +98,10 @@ defmodule BigzWeb.UserLive.Settings do
     socket =
       case Accounts.update_user_email(socket.assigns.current_scope.user, token) do
         {:ok, _user} ->
-          put_flash(socket, :info, "Email changed successfully.")
+          put_flash(socket, :info, "E-mail alterado com sucesso.")
 
         {:error, _} ->
-          put_flash(socket, :error, "Email change link is invalid or it has expired.")
+          put_flash(socket, :error, "O link para alterar o e-mail é inválido ou expirou.")
       end
 
     {:ok, push_navigate(socket, to: ~p"/users/settings")}
@@ -149,7 +148,7 @@ defmodule BigzWeb.UserLive.Settings do
           &url(~p"/users/settings/confirm-email/#{&1}")
         )
 
-        info = "A link to confirm your email change has been sent to the new address."
+        info = "Um link para confirmar a alteração de e-mail foi enviado para o novo endereço."
         {:noreply, socket |> put_flash(:info, info)}
 
       changeset ->

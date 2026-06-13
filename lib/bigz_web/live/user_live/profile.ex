@@ -11,14 +11,15 @@ defmodule BigzWeb.UserLive.Profile do
       <div class="mx-auto max-w-2xl space-y-6">
         <div>
           <h1 class="text-3xl font-extrabold tracking-tight">Meu perfil</h1>
+          
           <p class="text-sm text-base-content/60 mt-1">
             Suas informações pessoais e sua evolução no Big Z.
           </p>
         </div>
-
-        <%!-- Profile card --%>
+         <%!-- Profile card --%>
         <div class="rounded-box bg-base-100 border border-base-300 shadow-sm overflow-hidden">
           <div class="h-24 bg-gradient-to-r from-primary/20 via-secondary/15 to-accent/20"></div>
+          
           <div class="px-6 pb-6">
             <div class="flex items-end justify-between -mt-10">
               <span class="grid place-items-center size-20 rounded-full bg-secondary text-secondary-content text-2xl font-bold uppercase ring-4 ring-base-100">
@@ -30,7 +31,7 @@ defmodule BigzWeb.UserLive.Profile do
                 </button>
               </div>
             </div>
-
+            
             <%= if @editing do %>
               <.form
                 for={@form}
@@ -58,15 +59,17 @@ defmodule BigzWeb.UserLive.Profile do
               <div class="mt-4 space-y-4">
                 <div>
                   <h2 class="text-xl font-bold">{@user.name}</h2>
+                  
                   <p class="text-sm text-base-content/50 flex items-center gap-1.5 mt-0.5">
                     <.icon name="hero-envelope" class="size-4" /> {@user.email}
                   </p>
                 </div>
-
+                
                 <div>
                   <p class="text-xs font-semibold uppercase tracking-wider text-base-content/40">
                     Bio
                   </p>
+                  
                   <p class="text-sm text-base-content/70 mt-1 leading-relaxed">
                     <%= if @user.bio && @user.bio != "" do %>
                       {@user.bio}
@@ -81,8 +84,7 @@ defmodule BigzWeb.UserLive.Profile do
             <% end %>
           </div>
         </div>
-
-        <%!-- Stats + account link --%>
+         <%!-- Stats + account link --%>
         <div class="grid sm:grid-cols-2 gap-4">
           <.stat_card
             label="Pontuação total"
@@ -103,8 +105,7 @@ defmodule BigzWeb.UserLive.Profile do
                 <span class="block font-semibold">Conta e segurança</span>
                 <span class="block text-xs text-base-content/50">E-mail e senha</span>
               </span>
-            </span>
-            <.icon name="hero-chevron-right" class="size-5 text-base-content/40" />
+            </span> <.icon name="hero-chevron-right" class="size-5 text-base-content/40" />
           </.link>
         </div>
       </div>

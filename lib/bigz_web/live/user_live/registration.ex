@@ -9,13 +9,15 @@ defmodule BigzWeb.UserLive.Registration do
     ~H"""
     <Layouts.auth flash={@flash} current_scope={@current_scope}>
       <:actions>
-        <.link navigate={~p"/users/log-in"} class="btn btn-ghost btn-sm">Log in</.link>
+        <.link navigate={~p"/users/log-in"} class="btn btn-ghost btn-sm">Entrar</.link>
       </:actions>
-
+      
       <div class="space-y-6">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-primary">Register</p>
+          <p class="text-xs font-semibold uppercase tracking-wider text-primary">Cadastro</p>
+          
           <h1 class="text-2xl font-extrabold tracking-tight mt-1">Criar sua conta</h1>
+          
           <p class="text-sm text-base-content/60 mt-1">
             Já possui cadastro?
             <.link navigate={~p"/users/log-in"} class="font-semibold text-primary hover:underline">
@@ -24,7 +26,7 @@ defmodule BigzWeb.UserLive.Registration do
             agora.
           </p>
         </div>
-
+        
         <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
           <.input
             field={@form[:name]}
@@ -80,18 +82,10 @@ defmodule BigzWeb.UserLive.Registration do
   @impl true
   def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.register_user(user_params) do
-      {:ok, user} ->
+      {:ok, _user} ->
         {:noreply,
          socket
          |> put_flash(:info, "Conta criada com sucesso.")
-         |> push_navigate(to: ~p"/users/log-in")}
-
-        {:noreply,
-         socket
-         |> put_flash(
-           :info,
-           "Um email foi enviado para #{user.email}. Acesse para confirmar sua conta."
-         )
          |> push_navigate(to: ~p"/users/log-in")}
 
       {:error, %Ecto.Changeset{} = changeset} ->

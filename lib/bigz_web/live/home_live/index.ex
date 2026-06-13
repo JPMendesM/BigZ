@@ -42,19 +42,18 @@ defmodule BigzWeb.HomeLive.Index do
         <%!-- Greeting --%>
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <p class="text-sm text-base-content/50">
-              {greeting()}, que bom ter você de volta.
-            </p>
+            <p class="text-sm text-base-content/50">{greeting()}, que bom ter você de volta.</p>
+            
             <h1 class="text-3xl font-extrabold tracking-tight mt-1">
               Olá, {first_name(@current_scope.user)}
             </h1>
           </div>
+          
           <.link navigate={~p"/habits"} class="btn btn-primary gap-2">
             <.icon name="hero-check-circle" class="size-5" /> Registrar atividade
           </.link>
         </div>
-
-        <%!-- Stat cards — scores derived from check-ins, not users.score --%>
+         <%!-- Stat cards — scores derived from check-ins, not users.score --%>
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <.stat_card
             label="Pontuação total"
@@ -85,23 +84,22 @@ defmodule BigzWeb.HomeLive.Index do
             hint="criados por você"
           />
         </div>
-
+        
         <div class="grid gap-6 lg:grid-cols-3">
           <%!-- Weekly summary bars --%>
           <div class="lg:col-span-1 rounded-box bg-base-100 border border-base-300 p-6 shadow-sm">
             <h2 class="text-lg font-bold">Últimas {length(@weekly_summary)} semanas</h2>
+            
             <p class="text-xs text-base-content/50 mt-0.5">Pontos por semana (seg–dom, UTC)</p>
-
+            
             <div class="mt-6 space-y-4">
               <div :for={week <- @weekly_summary}>
                 <div class="flex justify-between items-baseline mb-1.5">
                   <span class="text-xs font-medium text-base-content/60">
                     {format_week_label(week)}
-                  </span>
-                  <span class="text-xs font-bold">
-                    {week.points} pts · {week.count}x
-                  </span>
+                  </span> <span class="text-xs font-bold">{week.points} pts · {week.count}x</span>
                 </div>
+                
                 <div class="h-2.5 bg-base-200 rounded-full overflow-hidden">
                   <div
                     class="h-full bg-primary rounded-full transition-all duration-500"
@@ -112,25 +110,27 @@ defmodule BigzWeb.HomeLive.Index do
               </div>
             </div>
           </div>
-
-          <%!-- Check-in history --%>
+           <%!-- Check-in history --%>
           <div class="lg:col-span-2 rounded-box bg-base-100 border border-base-300 shadow-sm overflow-hidden">
             <div class="px-6 py-5 border-b border-base-200">
               <h2 class="text-lg font-bold">Histórico de check-ins</h2>
+              
               <p class="text-xs text-base-content/50 mt-0.5">
                 Últimos {length(@checkins)} registros — mais recente primeiro
               </p>
             </div>
-
+            
             <%= if @checkins == [] do %>
               <div class="px-6 py-12 text-center">
                 <span class="grid place-items-center size-14 rounded-full bg-base-200 text-base-content/40 mx-auto">
                   <.icon name="hero-calendar" class="size-7" />
                 </span>
                 <h3 class="font-bold mt-4">Nenhum check-in ainda</h3>
+                
                 <p class="text-sm text-base-content/50 mt-1 max-w-xs mx-auto">
                   Explore os hábitos disponíveis e registre o primeiro check-in do seu dia.
                 </p>
+                
                 <.link navigate={~p"/habits"} class="btn btn-primary btn-sm mt-4 gap-2">
                   <.icon name="hero-arrow-right" class="size-4" /> Ver hábitos
                 </.link>
@@ -156,10 +156,9 @@ defmodule BigzWeb.HomeLive.Index do
                         "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300"
                     ]}>
                       {checkin.habit.category}
-                    </span>
-                    <span class="font-medium text-sm truncate">{checkin.habit.name}</span>
+                    </span> <span class="font-medium text-sm truncate">{checkin.habit.name}</span>
                   </div>
-
+                  
                   <div class="flex items-center gap-3 shrink-0">
                     <span class="flex items-center gap-1 text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-lg border border-success/20">
                       <.icon name="hero-bolt" class="size-3" /> +{checkin.habit.points}

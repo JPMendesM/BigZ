@@ -9,35 +9,25 @@ defmodule BigzWeb.UserLive.Login do
     <Layouts.auth flash={@flash} current_scope={@current_scope}>
       <:actions>
         <.link :if={!@current_scope} navigate={~p"/users/register"} class="btn btn-ghost btn-sm">
-          Register
+          Criar conta
         </.link>
       </:actions>
 
       <div class="space-y-6">
         <div>
           <h1 class="text-2xl font-extrabold tracking-tight">Entrar</h1>
+
           <p class="text-sm text-base-content/60 mt-1">
             <%= if @current_scope do %>
-              You need to reauthenticate to perform sensitive actions on your account.
+              Você precisa confirmar sua identidade para realizar ações sensíveis na conta.
             <% else %>
               Ainda não tem conta? <.link
                 navigate={~p"/users/register"}
                 class="font-semibold text-primary hover:underline"
                 phx-no-format
-              >Sign up</.link> e comece agora.
+              >Criar conta</.link> e comece agora.
             <% end %>
           </p>
-        </div>
-
-        <div :if={local_mail_adapter?()} class="alert alert-info">
-          <.icon name="hero-information-circle" class="size-6 shrink-0" />
-          <div>
-            <p>You are running the local mail adapter.</p>
-
-            <p>
-              To see sent emails, visit <.link href="/dev/mailbox" class="underline">the mailbox page</.link>.
-            </p>
-          </div>
         </div>
 
         <.form
@@ -58,7 +48,7 @@ defmodule BigzWeb.UserLive.Login do
             phx-mounted={JS.focus()}
           />
           <.button class="btn btn-primary w-full">
-            Log in with email <span aria-hidden="true">→</span>
+            Entrar com link por e-mail <span aria-hidden="true">→</span>
           </.button>
         </.form>
 
@@ -89,9 +79,9 @@ defmodule BigzWeb.UserLive.Login do
             spellcheck="false"
           />
           <.button class="btn btn-primary w-full" name={@form[:remember_me].name} value="true">
-            Log in and stay logged in <span aria-hidden="true">→</span>
+            Entrar e permanecer logado <span aria-hidden="true">→</span>
           </.button>
-          <.button class="btn btn-primary btn-soft w-full mt-2">Log in only this time</.button>
+          <.button class="btn btn-primary btn-soft w-full mt-2">Entrar apenas desta vez</.button>
         </.form>
       </div>
     </Layouts.auth>
@@ -123,15 +113,11 @@ defmodule BigzWeb.UserLive.Login do
     end
 
     info =
-      "If your email is in our system, you will receive instructions for logging in shortly."
+      "Se este e-mail estiver cadastrado, você receberá as instruções de acesso em instantes."
 
     {:noreply,
      socket
      |> put_flash(:info, info)
      |> push_navigate(to: ~p"/users/log-in")}
-  end
-
-  defp local_mail_adapter? do
-    Application.get_env(:bigz, Bigz.Mailer)[:adapter] == Swoosh.Adapters.Local
   end
 end

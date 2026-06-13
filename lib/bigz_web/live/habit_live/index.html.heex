@@ -4,11 +4,12 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-3xl font-extrabold tracking-tight">Hábitos Sustentáveis</h1>
+        
         <p class="text-sm text-base-content/60 mt-1 max-w-2xl">
           Explore e gerencie hábitos ecológicos do dia a dia. Acumule pontos e inspire a comunidade.
         </p>
       </div>
-
+      
       <div class="shrink-0">
         <%= if @current_scope && @current_scope.user do %>
           <.link navigate={~p"/habits/new"} class="btn btn-primary gap-2">
@@ -23,8 +24,7 @@
         <% end %>
       </div>
     </div>
-
-    <%!-- Category filters (segmented chips) --%>
+     <%!-- Category filters (segmented chips) --%>
     <div class="flex flex-wrap items-center gap-2">
       <span class="text-xs font-bold uppercase tracking-wider text-base-content/40 mr-1">
         Filtrar
@@ -54,8 +54,7 @@
         </.link>
       <% end %>
     </div>
-
-    <%!-- Habits grid --%>
+     <%!-- Habits grid --%>
     <div id="habits" phx-update="stream" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
       <div
         id="habits-empty"
@@ -65,11 +64,12 @@
           <.icon name="hero-magnifying-glass" class="size-7" />
         </span>
         <h3 class="text-lg font-bold mt-4">Nenhum hábito por aqui</h3>
+        
         <p class="text-sm text-base-content/50 mt-1">
           Seja o primeiro a sugerir um hábito sustentável para esta categoria.
         </p>
       </div>
-
+      
       <div
         :for={{id, habit} <- @streams.habits}
         id={id}
@@ -96,12 +96,13 @@
               <.icon name="hero-bolt" class="size-4" /> <span>+{habit.points} pts</span>
             </div>
           </div>
-
+          
           <h3 class="text-lg font-bold mt-3 line-clamp-1">{habit.name}</h3>
+          
           <p class="text-sm text-base-content/60 mt-1.5 line-clamp-3 leading-relaxed">
             {habit.description || "Sem descrição detalhada."}
           </p>
-
+          
           <div class="flex items-center justify-between border-t border-base-200 pt-4 mt-4">
             <div class="flex items-center gap-2 text-xs text-base-content/60 min-w-0">
               <span class="grid place-items-center size-6 rounded-full bg-neutral text-neutral-content uppercase font-bold text-[10px] shrink-0">
@@ -115,7 +116,7 @@
                 <% end %>
               </span>
             </div>
-
+            
             <div
               :if={
                 @current_scope && @current_scope.user && habit.user_id == @current_scope.user.id
@@ -139,7 +140,7 @@
               </.link>
             </div>
           </div>
-
+          
           <%= if @current_scope && @current_scope.user do %>
             <.link
               navigate={~p"/habits/#{habit.id}/checkin"}
@@ -152,8 +153,7 @@
       </div>
     </div>
   </div>
-
-  <%!-- Create / Edit modal --%>
+   <%!-- Create / Edit modal --%>
   <%= if @live_action in [:new, :edit] do %>
     <div
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral/50 backdrop-blur-sm bz-animate-fade-in"
@@ -165,7 +165,7 @@
           <h2 class="text-xl font-bold flex items-center gap-2">
             <.icon name="hero-sparkles" class="size-5 text-primary" /> {@page_title}
           </h2>
-
+          
           <.link
             navigate={~p"/habits"}
             class="btn btn-ghost btn-circle btn-sm"
@@ -174,7 +174,7 @@
             <.icon name="hero-x-mark" class="size-5" />
           </.link>
         </div>
-
+        
         <.form :let={f} for={@form} phx-change="validate" phx-submit="save" class="space-y-4">
           <.input
             field={f[:name]}
@@ -214,7 +214,7 @@
               min="1"
             />
           </div>
-
+          
           <div class="flex justify-end gap-2 pt-4 border-t border-base-200">
             <.link navigate={~p"/habits"} class="btn btn-ghost">Cancelar</.link>
             <.button variant="primary" class="btn btn-primary px-5" phx-disable-with="Salvando...">

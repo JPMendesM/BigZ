@@ -1,5 +1,4 @@
 <Layouts.flash_group flash={@flash} />
-
 <div class="min-h-screen bg-base-100 text-base-content">
   <%!-- Public header --%>
   <header class="sticky top-0 z-30 bg-base-100/85 backdrop-blur border-b border-base-300">
@@ -7,7 +6,6 @@
       <.link href={~p"/"} class="flex items-center" aria-label="Big Z — início">
         <Layouts.logo class="h-8 w-auto" />
       </.link>
-
       <div class="flex items-center gap-2 sm:gap-3">
         <Layouts.theme_toggle />
         <%= if @current_scope && @current_scope.user do %>
@@ -30,35 +28,34 @@
       </div>
     </div>
   </header>
-
-  <%!-- Hero --%>
+   <%!-- Hero --%>
   <section class="relative overflow-hidden">
     <div
       class="absolute -top-24 -right-24 size-72 rounded-full bg-primary/10 blur-3xl"
       aria-hidden="true"
     >
     </div>
+    
     <div
       class="absolute top-40 -left-24 size-72 rounded-full bg-secondary/10 blur-3xl"
       aria-hidden="true"
     >
     </div>
-
+    
     <div class="relative mx-auto max-w-6xl px-5 sm:px-8 pt-16 pb-20 grid lg:grid-cols-2 gap-12 items-center">
       <div class="bz-animate-fade-up space-y-7">
         <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success/10 text-success text-sm font-semibold border border-success/20">
           <.icon name="hero-sparkles" class="size-4" /> Hábitos sustentáveis, todos os dias
         </span>
-
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">
           Pequenas escolhas criam <span class="text-primary">grandes ondas</span> de mudança.
         </h1>
-
+        
         <p class="text-lg text-base-content/70 max-w-xl leading-relaxed">
           Registre hábitos, acompanhe sua evolução e transforme atitudes sustentáveis
           em parte da sua rotina.
         </p>
-
+        
         <div class="flex flex-col sm:flex-row gap-3">
           <%= if @current_scope && @current_scope.user do %>
             <.link navigate={~p"/inicio"} class="btn btn-primary btn-lg gap-2">
@@ -75,19 +72,19 @@
           <% end %>
         </div>
       </div>
-
+      
       <div class="relative flex justify-center lg:justify-end">
         <div class="relative bz-float">
           <div class="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-primary/15 to-secondary/15 blur-2xl">
           </div>
+          
           <div class="relative grid place-items-center size-64 sm:size-80 rounded-[2.5rem] bg-base-200 border border-base-300 shadow-sm">
             <Layouts.logo variant="icon" class="size-44 sm:size-56" />
           </div>
         </div>
       </div>
     </div>
-
-    <%!-- Decorative wave --%>
+     <%!-- Decorative wave --%>
     <svg
       class="w-full text-base-200"
       viewBox="0 0 1440 120"
@@ -97,8 +94,7 @@
       <path d="M0,64 C320,120 520,16 720,48 C920,80 1180,128 1440,72 L1440,120 L0,120 Z" />
     </svg>
   </section>
-
-  <%!-- Benefits --%>
+   <%!-- Benefits --%>
   <section class="bg-base-200">
     <div class="mx-auto max-w-6xl px-5 sm:px-8 py-16 grid gap-6 sm:grid-cols-3">
       <div class="bz-lift rounded-box bg-base-100 border border-base-300 p-6 shadow-sm">
@@ -106,34 +102,36 @@
           <.icon name="hero-check-circle" class="size-6" />
         </span>
         <h3 class="font-bold text-lg">Registre em segundos</h3>
+        
         <p class="text-sm text-base-content/60 mt-2 leading-relaxed">
           Confirme um hábito praticado com um toque e mantenha a constância sem esforço.
         </p>
       </div>
-
+      
       <div class="bz-lift rounded-box bg-base-100 border border-base-300 p-6 shadow-sm">
         <span class="grid place-items-center size-11 rounded-field bg-secondary/10 text-secondary mb-4">
           <.icon name="hero-chart-bar" class="size-6" />
         </span>
         <h3 class="font-bold text-lg">Acompanhe sua evolução</h3>
+        
         <p class="text-sm text-base-content/60 mt-2 leading-relaxed">
           Some pontos a cada atitude e veja, com clareza, o quanto você já avançou.
         </p>
       </div>
-
+      
       <div class="bz-lift rounded-box bg-base-100 border border-base-300 p-6 shadow-sm">
         <span class="grid place-items-center size-11 rounded-field bg-accent/20 text-success mb-4">
           <.icon name="hero-users" class="size-6" />
         </span>
         <h3 class="font-bold text-lg">Inspire a comunidade</h3>
+        
         <p class="text-sm text-base-content/60 mt-2 leading-relaxed">
           Hábitos compartilhados criam uma rede de pessoas movendo a mudança juntas.
         </p>
       </div>
     </div>
   </section>
-
-  <%!-- Sustainability proposal --%>
+   <%!-- Sustainability proposal --%>
   <section class="mx-auto max-w-6xl px-5 sm:px-8 py-16">
     <div class="rounded-box bg-neutral text-neutral-content p-8 sm:p-12 relative overflow-hidden">
       <div
@@ -141,14 +139,17 @@
         aria-hidden="true"
       >
       </div>
+      
       <div class="relative max-w-2xl space-y-4">
         <h2 class="text-2xl sm:text-3xl font-extrabold">
           Sustentabilidade é uma rotina, não um evento.
         </h2>
+        
         <p class="text-neutral-content/80 leading-relaxed">
           O Big Z nasceu para tornar leve o caminho das boas escolhas. Cada hábito registrado
           é um passo — e cada passo, repetido, vira uma onda de impacto positivo.
         </p>
+        
         <%= unless @current_scope && @current_scope.user do %>
           <.link navigate={~p"/users/register"} class="btn btn-primary mt-2 gap-2">
             Começar agora <.icon name="hero-arrow-right" class="size-5" />
@@ -157,17 +158,13 @@
       </div>
     </div>
   </section>
-
-  <%!-- Footer --%>
+   <%!-- Footer --%>
   <footer class="border-t border-base-300">
     <div class="mx-auto max-w-6xl px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
       <.link href={~p"/"} class="flex items-center gap-2" aria-label="Big Z">
-        <Layouts.logo variant="icon" class="size-7" />
-        <span class="font-bold">Big Z</span>
+        <Layouts.logo variant="icon" class="size-7" /> <span class="font-bold">Big Z</span>
       </.link>
-      <p class="text-sm text-base-content/50">
-        Surfando em hábitos sustentáveis.
-      </p>
+      <p class="text-sm text-base-content/50">Surfando em hábitos sustentáveis.</p>
     </div>
   </footer>
 </div>

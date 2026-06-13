@@ -10,9 +10,10 @@ defmodule BigzWeb.UserLive.Confirmation do
       <div class="space-y-6">
         <div>
           <h1 class="text-2xl font-extrabold tracking-tight">Bem-vindo!</h1>
+          
           <p class="text-sm text-base-content/60 mt-1 truncate">{@user.email}</p>
         </div>
-
+        
         <.form
           :if={!@user.confirmed_at}
           for={@form}
@@ -35,7 +36,7 @@ defmodule BigzWeb.UserLive.Confirmation do
             Confirm and log in only this time
           </.button>
         </.form>
-
+        
         <.form
           :if={@user.confirmed_at}
           for={@form}
@@ -62,7 +63,7 @@ defmodule BigzWeb.UserLive.Confirmation do
             </.button>
           <% end %>
         </.form>
-
+        
         <p :if={!@user.confirmed_at} class="alert alert-outline mt-8">
           Tip: If you prefer passwords, you can enable them in the user settings.
         </p>

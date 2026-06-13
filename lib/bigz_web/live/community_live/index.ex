@@ -43,22 +43,20 @@ defmodule BigzWeb.CommunityLive.Index do
         <%!-- Header --%>
         <div>
           <h1 class="text-3xl font-extrabold tracking-tight">Comunidade</h1>
+          
           <p class="text-sm text-base-content/60 mt-1">
             Atividades recentes de todos os membros — atualizadas em tempo real.
           </p>
         </div>
-
-        <%!-- Live indicator --%>
+         <%!-- Live indicator --%>
         <div class="flex items-center gap-2 text-xs font-semibold text-success">
           <span class="relative flex size-2">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75">
-            </span>
-            <span class="relative inline-flex rounded-full size-2 bg-success"></span>
+            </span> <span class="relative inline-flex rounded-full size-2 bg-success"></span>
           </span>
           Ao vivo
         </div>
-
-        <%!-- Feed --%>
+         <%!-- Feed --%>
         <div
           id="community-feed"
           phx-update="stream"
@@ -72,14 +70,16 @@ defmodule BigzWeb.CommunityLive.Index do
               <.icon name="hero-user-group" class="size-7" />
             </span>
             <h3 class="font-bold mt-4">Nenhuma atividade ainda</h3>
+            
             <p class="text-sm text-base-content/50 mt-1">
               Seja o primeiro a registrar um check-in hoje.
             </p>
+            
             <.link navigate={~p"/habits"} class="btn btn-primary btn-sm mt-4 gap-2">
               <.icon name="hero-arrow-right" class="size-4" /> Ver hábitos
             </.link>
           </div>
-
+          
           <div
             :for={{id, checkin} <- @streams.checkins}
             id={id}
@@ -89,14 +89,13 @@ defmodule BigzWeb.CommunityLive.Index do
             <span class="shrink-0 grid place-items-center size-10 rounded-full bg-secondary text-secondary-content text-sm font-bold uppercase">
               {user_initials(checkin.user)}
             </span>
-
             <div class="flex-1 min-w-0">
               <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                 <span class="font-semibold text-sm">{display_name(checkin.user)}</span>
                 <span class="text-xs text-base-content/40">registrou</span>
                 <span class="font-semibold text-sm truncate">{checkin.habit.name}</span>
               </div>
-
+              
               <div class="flex flex-wrap items-center gap-2 mt-2">
                 <span class={[
                   "px-2 py-0.5 text-[10px] font-bold tracking-wide rounded-full uppercase",
@@ -113,14 +112,11 @@ defmodule BigzWeb.CommunityLive.Index do
                 ]}>
                   {checkin.habit.category}
                 </span>
-
                 <span class="flex items-center gap-0.5 text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-lg border border-success/20">
                   <.icon name="hero-bolt" class="size-3" /> +{checkin.habit.points} pts
                 </span>
-
                 <span class="text-xs text-base-content/40 flex items-center gap-1">
-                  <.icon name="hero-clock" class="size-3" />
-                  {format_datetime(checkin.inserted_at)}
+                  <.icon name="hero-clock" class="size-3" /> {format_datetime(checkin.inserted_at)}
                 </span>
               </div>
             </div>
