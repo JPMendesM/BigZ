@@ -39,8 +39,6 @@ defmodule Bigz.Accounts.User do
   def email_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:email, :name])
-    |> validate_required([:name])
-    |> validate_length(:name, min: 2, max: 100)
     |> validate_email(opts)
   end
 
