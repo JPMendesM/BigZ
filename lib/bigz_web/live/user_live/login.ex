@@ -12,11 +12,11 @@ defmodule BigzWeb.UserLive.Login do
           Criar conta
         </.link>
       </:actions>
-
+      
       <div class="space-y-6">
         <div>
           <h1 class="text-2xl font-extrabold tracking-tight">Entrar</h1>
-
+          
           <p class="text-sm text-base-content/60 mt-1">
             <%= if @current_scope do %>
               Você precisa confirmar sua identidade para realizar ações sensíveis na conta.
@@ -29,7 +29,7 @@ defmodule BigzWeb.UserLive.Login do
             <% end %>
           </p>
         </div>
-
+        
         <.form
           :let={f}
           for={@form}
@@ -51,9 +51,9 @@ defmodule BigzWeb.UserLive.Login do
             Entrar com link por e-mail <span aria-hidden="true">→</span>
           </.button>
         </.form>
-
+        
         <div class="divider text-base-content/40">ou</div>
-
+        
         <.form
           :let={f}
           for={@form}
