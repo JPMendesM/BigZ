@@ -77,7 +77,7 @@ defmodule BigzWeb.Layouts do
       <aside class="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64 bg-base-100 border-r border-base-300">
         <.sidebar_content active={@active} user={@user} />
       </aside>
-       <%!-- Mobile drawer --%>
+      <%!-- Mobile drawer --%>
       <div
         id="drawer-backdrop"
         class="hidden fixed inset-0 z-40 bg-neutral/40 lg:hidden"
@@ -85,7 +85,7 @@ defmodule BigzWeb.Layouts do
         aria-hidden="true"
       >
       </div>
-      
+
       <aside
         id="drawer-panel"
         class="hidden fixed inset-y-0 left-0 z-50 w-72 max-w-[80%] flex-col bg-base-100 border-r border-base-300 -translate-x-full lg:hidden"
@@ -100,9 +100,9 @@ defmodule BigzWeb.Layouts do
             <.icon name="hero-x-mark" class="size-5" />
           </button>
         </div>
-         <.sidebar_content active={@active} user={@user} />
+        <.sidebar_content active={@active} user={@user} />
       </aside>
-      
+
       <div class="lg:pl-64">
         <%!-- Topbar --%>
         <header class="sticky top-0 z-30 flex items-center gap-3 h-16 px-4 sm:px-6 bg-base-100/85 backdrop-blur border-b border-base-300">
@@ -119,12 +119,12 @@ defmodule BigzWeb.Layouts do
             <span class="font-bold tracking-tight text-base-content">Big Z</span>
           </.link>
           <div class="flex-1"></div>
-           <.theme_toggle />
+          <.theme_toggle />
           <%= if @user do %>
             <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-success/10 text-success font-bold text-sm border border-success/20">
               <.icon name="hero-bolt" class="size-4" /> <span>{@topbar_score} pts</span>
             </div>
-            
+
             <details class="dropdown dropdown-end">
               <summary class="btn btn-ghost gap-2 normal-case list-none">
                 <span class="grid place-items-center size-8 rounded-full bg-secondary text-secondary-content text-xs font-bold uppercase">
@@ -132,28 +132,29 @@ defmodule BigzWeb.Layouts do
                 </span>
                 <span class="hidden sm:inline max-w-[10rem] truncate font-semibold">
                   {@user.name || @user.email}
-                </span> <.icon name="hero-chevron-down" class="size-4 opacity-60" />
+                </span>
+                 <.icon name="hero-chevron-down" class="size-4 opacity-60" />
               </summary>
-              
+
               <ul class="dropdown-content menu mt-2 w-60 rounded-box bg-base-100 border border-base-300 shadow-lg p-2 z-50">
                 <li class="menu-title px-3 py-1">
                   <span class="block text-xs font-normal text-base-content/60 truncate">
                     {@user.email}
                   </span>
                 </li>
-                
+
                 <li>
                   <.link navigate={~p"/profile"}>
                     <.icon name="hero-user-circle" class="size-5" /> Perfil
                   </.link>
                 </li>
-                
+
                 <li>
                   <.link navigate={~p"/users/settings"}>
                     <.icon name="hero-cog-6-tooth" class="size-5" /> Conta e segurança
                   </.link>
                 </li>
-                
+
                 <li>
                   <.link href={~p"/users/log-out"} method="delete" class="text-error">
                     <.icon name="hero-arrow-right-start-on-rectangle" class="size-5" /> Sair
@@ -166,13 +167,13 @@ defmodule BigzWeb.Layouts do
             <.link navigate={~p"/users/register"} class="btn btn-primary btn-sm">Criar conta</.link>
           <% end %>
         </header>
-        
+
         <main class="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div class="mx-auto max-w-6xl bz-animate-fade-up">{render_slot(@inner_block)}</div>
         </main>
       </div>
     </div>
-     <.flash_group flash={@flash} />
+    <.flash_group flash={@flash} />
     """
   end
 
@@ -303,16 +304,16 @@ defmodule BigzWeb.Layouts do
           <h2 class="text-3xl font-extrabold leading-tight">
             Pequenas escolhas criam grandes ondas de mudança.
           </h2>
-          
+
           <p class="text-neutral-content/80 leading-relaxed">
             Registre hábitos, acompanhe sua evolução e transforme atitudes sustentáveis
             em parte da sua rotina.
           </p>
         </div>
-        
+
         <div class="relative text-sm text-neutral-content/60">Constância, leveza e comunidade.</div>
       </div>
-       <%!-- Form panel --%>
+      <%!-- Form panel --%>
       <div class="flex flex-col min-h-screen lg:min-h-0">
         <header class="flex items-center justify-between p-5 sm:px-8">
           <.link navigate={~p"/"} class="flex items-center" aria-label="Big Z — início">
@@ -320,13 +321,13 @@ defmodule BigzWeb.Layouts do
           </.link>
           <div class="flex items-center gap-3 text-sm">{render_slot(@actions)} <.theme_toggle /></div>
         </header>
-        
+
         <main class="flex-1 flex items-center justify-center px-5 sm:px-8 py-8">
           <div class="w-full max-w-sm bz-animate-fade-up">{render_slot(@inner_block)}</div>
         </main>
       </div>
     </div>
-     <.flash_group flash={@flash} />
+    <.flash_group flash={@flash} />
     """
   end
 
@@ -355,7 +356,7 @@ defmodule BigzWeb.Layouts do
         {gettext("Attempting to reconnect")}
         <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
       </.flash>
-      
+
       <.flash
         id="server-error"
         kind={:error}
