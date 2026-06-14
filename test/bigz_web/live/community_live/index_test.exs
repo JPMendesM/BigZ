@@ -91,23 +91,30 @@ defmodule BigzWeb.CommunityLive.IndexTest do
       assert html =~ "Solar Panel Habit"
     end
 
-    test "never renders email or password-related fields", %{conn: conn, user: user} do
-      habit = habit_fixture(user)
-      checkin_fixture(user, habit)
+    test "never renders email or password-related fields", %{conn: conn} do
+      other = user_fixture(%{email: "secret@example.com"})
+      habit = habit_fixture(other)
+      checkin_fixture(other, habit)
 
       {:ok, _view, html} = live(conn, ~p"/comunidade")
 
-      refute html =~ user.email
+      refute html =~ "secret@example.com"
       refute html =~ "hashed_password"
       refute html =~ "password"
     end
 
     test "check-ins are ordered most recent first", %{conn: conn, user: user} do
+      import Ecto.Query
       habit_a = habit_fixture(user, %{name: "Older Habit"})
       habit_b = habit_fixture(user, %{name: "Newer Habit"})
 
-      checkin_fixture(user, habit_a, Date.add(Date.utc_today(), -1))
-      checkin_fixture(user, habit_b, Date.utc_today())
+      checkin_a = checkin_fixture(user, habit_a, Date.add(Date.utc_today(), -1))
+      _checkin_b = checkin_fixture(user, habit_b, Date.utc_today())
+
+      Bigz.Repo.update_all(
+        from(c in Checkin, where: c.id == ^checkin_a.id),
+        set: [inserted_at: DateTime.add(DateTime.utc_now(), -3600)]
+      )
 
       {:ok, _view, html} = live(conn, ~p"/comunidade")
 
@@ -201,7 +208,7 @@ defmodule BigzWeb.CommunityLive.IndexTest do
       assert render(view) =~ "Broadcast Habit"
     end
 
-    test "broadcast from another user appears in the feed", %{conn: conn, user: user} do
+    test "broadcast from another user appears in the feed", %{conn: conn} do
       other = user_fixture(%{email: "broadcaster@example.com"})
       habit = habit_fixture(other, %{name: "Other User Habit"})
 
@@ -213,15 +220,16 @@ defmodule BigzWeb.CommunityLive.IndexTest do
       assert render(view) =~ "Other User Habit"
     end
 
-    test "broadcast payload never renders sensitive fields", %{conn: conn, user: user} do
-      habit = habit_fixture(user)
+    test "broadcast payload never renders sensitive fields", %{conn: conn} do
+      other = user_fixture(%{email: "secret@example.com"})
+      habit = habit_fixture(other)
       {:ok, view, _html} = live(conn, ~p"/comunidade")
 
-      checkin = checkin_fixture(user, habit)
+      checkin = checkin_fixture(other, habit)
       send(view.pid, {:new_checkin, checkin})
 
       html = render(view)
-      refute html =~ user.email
+      refute html =~ "secret@example.com"
       refute html =~ "hashed_password"
     end
   end

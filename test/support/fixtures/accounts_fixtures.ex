@@ -13,10 +13,16 @@ defmodule Bigz.AccountsFixtures do
   def valid_user_password, do: "hello world!"
 
   def valid_user_attributes(attrs \\ %{}) do
+    attrs_map = Map.new(attrs)
+
+    password =
+      Map.get(attrs_map, :password) || Map.get(attrs_map, "password") || valid_user_password()
+
     Enum.into(attrs, %{
       email: unique_user_email(),
       name: "Test User",
-      password: valid_user_password()
+      password: password,
+      password_confirmation: password
     })
   end
 

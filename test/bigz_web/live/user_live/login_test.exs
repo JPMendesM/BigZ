@@ -8,9 +8,9 @@ defmodule BigzWeb.UserLive.LoginTest do
     test "renders login page", %{conn: conn} do
       {:ok, _lv, html} = live(conn, ~p"/users/log-in")
 
-      assert html =~ "Log in"
-      assert html =~ "Register"
-      assert html =~ "Log in with email"
+      assert html =~ "Entrar"
+      assert html =~ "Criar conta"
+      assert html =~ "Entrar com link por e-mail"
     end
   end
 
@@ -25,7 +25,7 @@ defmodule BigzWeb.UserLive.LoginTest do
         |> render_submit()
         |> follow_redirect(conn, ~p"/users/log-in")
 
-      assert html =~ "If your email is in our system"
+      assert html =~ "Se este e-mail estiver cadastrado"
 
       assert Bigz.Repo.get_by!(Bigz.Accounts.UserToken, user_id: user.id).context ==
                "login"
@@ -39,7 +39,7 @@ defmodule BigzWeb.UserLive.LoginTest do
         |> render_submit()
         |> follow_redirect(conn, ~p"/users/log-in")
 
-      assert html =~ "If your email is in our system"
+      assert html =~ "Se este e-mail estiver cadastrado"
     end
   end
 
@@ -81,11 +81,11 @@ defmodule BigzWeb.UserLive.LoginTest do
 
       {:ok, _login_live, login_html} =
         lv
-        |> element("main a", "Sign up")
+        |> element("main a", "Criar conta")
         |> render_click()
         |> follow_redirect(conn, ~p"/users/register")
 
-      assert login_html =~ "Register"
+      assert login_html =~ "Criar sua conta"
     end
   end
 
@@ -98,9 +98,9 @@ defmodule BigzWeb.UserLive.LoginTest do
     test "shows login page with email filled in", %{conn: conn, user: user} do
       {:ok, _lv, html} = live(conn, ~p"/users/log-in")
 
-      assert html =~ "You need to reauthenticate"
-      refute html =~ "Register"
-      assert html =~ "Log in with email"
+      assert html =~ "Você precisa confirmar sua identidade"
+      refute html =~ "Criar conta"
+      assert html =~ "Entrar com link por e-mail"
 
       assert html =~
                ~s(<input type="email" name="user[email]" id="login_form_magic_email" value="#{user.email}")

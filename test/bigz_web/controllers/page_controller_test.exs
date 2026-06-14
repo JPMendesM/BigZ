@@ -3,6 +3,6 @@ defmodule BigzWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "BigZ"
+    assert html_response(conn, 200) =~ "Big Z"
   end
 end

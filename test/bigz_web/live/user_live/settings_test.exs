@@ -12,8 +12,8 @@ defmodule BigzWeb.UserLive.SettingsTest do
         |> log_in_user(user_fixture())
         |> live(~p"/users/settings")
 
-      assert html =~ "Change Email"
-      assert html =~ "Save Password"
+      assert html =~ "E-mail"
+      assert html =~ "Salvar senha"
     end
 
     test "redirects if user is not logged in", %{conn: conn} do
@@ -33,7 +33,7 @@ defmodule BigzWeb.UserLive.SettingsTest do
         |> live(~p"/users/settings")
         |> follow_redirect(conn, ~p"/users/log-in")
 
-      assert conn.resp_body =~ "You must re-authenticate to access this page."
+      assert conn.resp_body =~ "Você precisa confirmar sua identidade para acessar esta página."
     end
   end
 
@@ -55,7 +55,9 @@ defmodule BigzWeb.UserLive.SettingsTest do
         })
         |> render_submit()
 
-      assert result =~ "A link to confirm your email"
+      assert result =~
+               "Um link para confirmar a alteração de e-mail foi enviado para o novo endereço."
+
       assert Accounts.get_user_by_email(user.email)
     end
 
@@ -70,7 +72,7 @@ defmodule BigzWeb.UserLive.SettingsTest do
           "user" => %{"email" => "with spaces"}
         })
 
-      assert result =~ "Change Email"
+      assert result =~ "E-mail"
       assert result =~ "must have the @ sign and no spaces"
     end
 
@@ -84,7 +86,7 @@ defmodule BigzWeb.UserLive.SettingsTest do
         })
         |> render_submit()
 
-      assert result =~ "Change Email"
+      assert result =~ "E-mail"
       assert result =~ "did not change"
     end
   end
@@ -136,7 +138,7 @@ defmodule BigzWeb.UserLive.SettingsTest do
           }
         })
 
-      assert result =~ "Save Password"
+      assert result =~ "Salvar senha"
       assert result =~ "should be at least 12 character(s)"
       assert result =~ "does not match password"
     end
@@ -154,7 +156,7 @@ defmodule BigzWeb.UserLive.SettingsTest do
         })
         |> render_submit()
 
-      assert result =~ "Save Password"
+      assert result =~ "Salvar senha"
       assert result =~ "should be at least 12 character(s)"
       assert result =~ "does not match password"
     end
@@ -179,7 +181,7 @@ defmodule BigzWeb.UserLive.SettingsTest do
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/users/settings"
       assert %{"info" => message} = flash
-      assert message == "Email changed successfully."
+      assert message == "E-mail alterado com sucesso."
       refute Accounts.get_user_by_email(user.email)
       assert Accounts.get_user_by_email(email)
 
@@ -188,7 +190,7 @@ defmodule BigzWeb.UserLive.SettingsTest do
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/users/settings"
       assert %{"error" => message} = flash
-      assert message == "Email change link is invalid or it has expired."
+      assert message == "O link para alterar o e-mail é inválido ou expirou."
     end
 
     test "does not update email with invalid token", %{conn: conn, user: user} do
@@ -196,7 +198,7 @@ defmodule BigzWeb.UserLive.SettingsTest do
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
       assert path == ~p"/users/settings"
       assert %{"error" => message} = flash
-      assert message == "Email change link is invalid or it has expired."
+      assert message == "O link para alterar o e-mail é inválido ou expirou."
       assert Accounts.get_user_by_email(user.email)
     end
 

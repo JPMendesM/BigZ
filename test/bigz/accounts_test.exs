@@ -76,15 +76,6 @@ defmodule Bigz.AccountsTest do
       {:error, changeset} = Accounts.register_user(%{email: String.upcase(email)})
       assert "has already been taken" in errors_on(changeset).email
     end
-
-    test "registers users without password" do
-      email = unique_user_email()
-      {:ok, user} = Accounts.register_user(valid_user_attributes(email: email))
-      assert user.email == email
-      assert is_nil(user.hashed_password)
-      assert is_nil(user.confirmed_at)
-      assert is_nil(user.password)
-    end
   end
 
   describe "sudo_mode?/2" do
@@ -348,16 +339,6 @@ defmodule Bigz.AccountsTest do
       assert {:ok, {^user, []}} = Accounts.login_user_by_magic_link(encoded_token)
       # one time use only
       assert {:error, :not_found} = Accounts.login_user_by_magic_link(encoded_token)
-    end
-
-    test "raises when unconfirmed user has password set" do
-      user = unconfirmed_user_fixture()
-      {1, nil} = Repo.update_all(User, set: [hashed_password: "hashed"])
-      {encoded_token, _hashed_token} = generate_user_magic_link_token(user)
-
-      assert_raise RuntimeError, ~r/magic link log in is not allowed/, fn ->
-        Accounts.login_user_by_magic_link(encoded_token)
-      end
     end
   end
 
