@@ -112,15 +112,28 @@
 **[TELA: Navegar para `/habits/new`]**
 
 **Fala:**
-> "O RF04 exige cadastro de hábitos com nome, descrição, categoria e pontuação.
-> As categorias permitidas são: alimentação, transporte, energia, água e resíduos.
-> A pontuação é validada para ser positiva."
+> "Olá, professor Bruno. Eu sou o Luiz Carlos e fiquei responsável pelo Módulo B, focado na Gestão de Hábitos.
+> Começando pelo RF04, que trata do cadastro de novos hábitos. Para cadastrar um hábito sustentável, 
+> exigimos um nome descritivo, uma descrição opcional, uma categoria ecológica e uma pontuação que represente
+> o benefício daquela ação.
+> 
+> As categorias são estritamente limitadas pelo projeto. Vou cadastrar um novo hábito agora para demonstrar.
+> 
+> Um detalhe técnico importante: nós também otimizamos o layout padrão da aplicação para evitar sobrecarga no banco a cada caractere digitado nas validações em tempo real do LiveView, assunto que detalharei ao mostrar o código."
 
-**[AÇÃO: Criar um novo hábito preenchendo todos os campos]**
+**[AÇÃO: Criar um novo hábito preenchendo todos os campos, como 'Economizar água na descarga', Categoria: 'água', Pontos: 15]**
 
 **Explicar no código:**
-- `lib/bigz/habits/habit.ex` — changeset com `validate_inclusion` para categoria e `validate_number` para pontuação
-- `lib/bigz_web/live/habit_live/index.ex` — LiveView com handle_event "save"
+- `lib/bigz/habits/habit.ex` (Schema do Ecto — Mapeia os campos da tabela no banco de dados e define validações) — `changeset/2`:
+  - `validate_required([:name, :category, :points, :user_id])`: Todos os campos fundamentais, inclusive a associação do criador, são obrigatórios.
+  - `validate_number(:points, greater_than: 0)`: Garante regras funcionais do negócio onde a pontuação do hábito deve ser estritamente positiva.
+  - `validate_inclusion(:category, ["alimentação", "transporte", "energia", "água", "resíduos"])`: Restrição estrita às categorias do domínio.
+- `lib/bigz_web/live/habit_live/index.ex` (LiveView — Controlador reativo que manipula o estado do formulário de criação):
+  - `apply_action(socket, :new, _params)`: Associa um struct `%Habit{}` vazio e o envelopa em `to_form/2` para o formulário.
+  - `save_habit(socket, :new, habit_params)`: Executa a chamada `Habits.create_habit/2` passando o `current_scope` (garantindo que o `user_id` do autor seja extraído de forma segura da sessão no backend) e redireciona com flash de sucesso.
+- `lib/bigz_web/components/layouts.ex` (Componente de Layout — Estrutura visual comum que abraça as páginas da aplicação):
+  - O cabeçalho do layout precisa recalcular a pontuação do usuário a cada renderização.
+  - Para evitar uma consulta lenta ao banco de dados Supabase a cada tecla digitada (validate event), criamos um cache em nível de processo com `Process.put/get`, fazendo com que os eventos subsequentes leiam os pontos diretamente da memória em 0ms.
 
 ---
 
@@ -129,34 +142,49 @@
 **[TELA: Navegar para `/habits`]**
 
 **Fala:**
-> "O RF05 exige listagem de hábitos com filtro por categoria. Qualquer usuário,
-> mesmo sem login, pode ver a lista pública de hábitos. O filtro é feito via
-> parâmetros de URL e aplicado diretamente na query Ecto."
+> "No RF05, implementamos a listagem pública dos hábitos sugeridos. Essa listagem é acessível por 
+> qualquer visitante do site, mesmo sem autenticação.
+> 
+> Também incluímos botões de filtro rápido no topo. Ao clicar nas categorias, a URL é atualizada 
+> via patch e a listagem é filtrada de forma instantânea sem recarregar a página."
 
-**[AÇÃO: Mostrar a lista de hábitos]**
-**[AÇÃO: Usar o filtro de categoria — clicar em "Energia", "Transporte", etc.]**
+**[AÇÃO: Mostrar a lista de hábitos pública]**
+**[AÇÃO: Usar os filtros clicando em "Alimentação", "Transporte", etc., mostrando a atualização fluida]**
 
 **Explicar no código:**
-- `Habits.list_habits/2` — `case Map.get(filters, "category")` filtra via Ecto query
-- `handle_params` no LiveView atualiza o filtro sem recarregar a página
+- `lib/bigz/habits.ex` (Contexto de Negócio — Camada de serviços e queries SQL de hábitos) — `list_habits/2`:
+  - Utiliza um query builder dinâmico em Ecto.
+  - O parâmetro "category" é validado contra a lista permitida para evitar injeções ou categorias inválidas na query.
+  - Realiza o preload: [:user] para evitar o clássico problema de consultas N+1 na renderização dos autores na listagem.
+- `lib/bigz_web/live/habit_live/index.ex` (LiveView — Controlador reativo da listagem e filtragem): — `handle_params/3`:
+  - O `handle_params` intercepta as mudanças de parâmetros de URL (category).
+  - Chama o contexto passando o `current_scope` e os filtros, re-hidratando o stream de hábitos: `stream(:habits, habits, reset: true)`. O `reset` limpa os elementos antigos no DOM virtual do LiveView de forma otimizada.
 
 ---
 
-### RF06 — Edição e remoção (~3 min)
+### RF06 — Edição e remoção com autorização (~3 min)
 
 **[TELA: Na lista de hábitos, encontrar um hábito criado pelo usuário logado]**
 
 **Fala:**
-> "O RF06 exige edição e remoção, mas apenas pelo próprio criador do hábito.
-> A autorização é feita no contexto: compara o `user_id` do hábito com o `user_id`
-> da sessão atual. Se não for o dono, retorna `{:error, :unauthorized}`."
+> "Para o RF06, o sistema permite que o criador de um hábito possa editá-lo ou removê-lo.
+> No entanto, há uma camada rígida de autorização. Os botões de ação só aparecem se você for o dono do hábito.
+> 
+> Além disso, no servidor, há uma dupla validação. Se um usuário mal-intencionado tentar forçar o acesso digitando 
+> a URL de edição de outro hábito na barra de navegação, o backend intercepta o acesso, bloqueia a renderização
+> e exibe uma mensagem de erro, como vou demonstrar."
 
-**[AÇÃO: Clicar em Editar — modificar o nome e salvar]**
-**[AÇÃO: Tentar acessar a edição de um hábito de outro usuário (se houver) para mostrar a proteção]**
+**[AÇÃO: Clicar em Editar em um hábito próprio, modificar os pontos e salvar]**
+**[AÇÃO: Copiar o link de edição e simular o acesso forçado à rota de edição de um hábito criado por outro usuário, exibindo o flash de erro "Você não tem permissão para editar este hábito."]**
 
 **Explicar no código:**
-- `Habits.update_habit/3` e `Habits.delete_habit/2` — verificação de `habit.user_id == current_scope.user.id`
-- Botões de editar/deletar só aparecem para o dono (`:if` no template HEEx)
+- `lib/bigz_web/live/habit_live/index.ex` (LiveView — Controlador reativo que gerencia ações e autorizações de rotas) — `apply_action/3` com `:edit`:
+  - A rota carrega o hábito através de `Habits.get_habit!/2`.
+  - Uma guarda condicional avalia: `if user && habit.user_id == user.id`. Se for falso, redireciona via `push_navigate` para `/habits` com um flash de erro `:unauthorized`.
+- `lib/bigz/habits.ex` (Contexto de Negócio — Camada que executa a persistência e segurança de dados) — `update_habit/3` e `delete_habit/2`:
+  - No contexto funcional, mesmo se a barreira da interface for contornada, as funções avaliam o `user_id`. Se divergir do id contido no `current_scope`, retornam imediatamente `{:error, :unauthorized}`, mantendo a consistência e segurança dos dados.
+- `lib/bigz_web/live/habit_live/index.html.heex` (Template HEEx — Estrutura HTML reativa da página):
+  - A diretiva de template `:if={@current_scope && @current_scope.user && habit.user_id == @current_scope.user.id}` envolve os botões de controle de edição e deleção, ocultando as ações visualmente para outros usuários.
 
 ---
 
@@ -175,22 +203,16 @@
 **[AÇÃO: Tentar registrar o mesmo hábito no mesmo dia — mostrar "Você já registrou este hábito hoje."]**
 
 **Explicar no código:**
-```
-lib/bigz/habits.ex — create_checkin/2:
-- user_id vem de current_scope.user.id (definido pela sessão, nunca pelo usuário)
-- checkin_date: Date.utc_today() (definido no servidor, não aceita data do cliente)
-- Repo.insert() dispara o unique_constraint do banco
-```
-```
-lib/bigz/habits/checkin.ex — changeset:
-- unique_constraint(:user_id, name: :checkins_user_id_habit_id_checkin_date_index)
-- message: "Você já registrou este hábito hoje."
-```
-```
-lib/bigz_web/live/checkin_live/new.ex:
-- Rota protegida: require_authenticated_user
-- handle_event "save" chama Habits.create_checkin(scope, habit)
-```
+- `lib/bigz/habits.ex` — `create_checkin/2`:
+  - `user_id` vem de `current_scope.user.id` (definido pela sessão, nunca pelo usuário)
+  - `checkin_date`: `Date.utc_today()` (definido no servidor, não aceita data do cliente)
+  - `Repo.insert()` dispara o `unique_constraint` do banco
+- `lib/bigz/habits/checkin.ex` — `changeset`:
+  - `unique_constraint(:user_id, name: :checkins_user_id_habit_id_checkin_date_index)`
+  - `message`: "Você já registrou este hábito hoje."
+- `lib/bigz_web/live/checkin_live/new.ex`:
+  - Rota protegida: `require_authenticated_user`
+  - `handle_event "save"` chama `Habits.create_checkin(scope, habit)`
 
 ---
 
@@ -215,19 +237,15 @@ lib/bigz_web/live/checkin_live/new.ex:
 **[AÇÃO: Fazer mais um check-in e voltar ao dashboard para mostrar atualização]**
 
 **Explicar no código:**
-```
-lib/bigz/habits.ex:
-- sum_user_points/1 → SELECT SUM(h.points) JOIN habits WHERE user_id = ?
-- sum_user_points_this_week/1 → filtra pela semana atual (segunda a domingo UTC)
-- list_weekly_summaries/2 → agrupa check-ins por semana em Elixir (sem date_trunc)
-- list_user_checkins/2 → JOIN preload, sem N+1
-```
-```
-lib/bigz_web/live/home_live/index.ex:
-- mount carrega todas as métricas de uma só vez
-- format_week_label/1 exibe "Semana atual" para a semana corrente
-- bar_pct/2 calcula o percentual para a barra de progresso
-```
+- `lib/bigz/habits.ex`:
+  - `sum_user_points/1` → `SELECT SUM(h.points) JOIN habits WHERE user_id = ?`
+  - `sum_user_points_this_week/1` → filtra pela semana atual (segunda a domingo UTC)
+  - `list_weekly_summaries/2` → agrupa check-ins por semana em Elixir (sem date_trunc)
+  - `list_user_checkins/2` → JOIN preload, sem N+1
+- `lib/bigz_web/live/home_live/index.ex`:
+  - `mount` carrega todas as métricas de uma só vez
+  - `format_week_label/1` exibe "Semana atual" para a semana corrente
+  - `bar_pct/2` calcula o percentual para a barra de progresso
 
 ---
 
@@ -247,20 +265,13 @@ lib/bigz_web/live/home_live/index.ex:
 **[AÇÃO: Mostrar o check-in aparecendo instantaneamente na outra janela aberta em `/comunidade`]**
 
 **Explicar no código:**
-```
-lib/bigz_web/live/community_live/index.ex:
-- mount: if connected?(socket) → PubSub.subscribe(topic)
-  (só assina quando o WebSocket está estabelecido, não no HTTP inicial)
-- handle_info({:new_checkin, checkin}, socket) → stream_insert(socket, :checkins, checkin, at: 0)
-  (Phoenix streams: deduplication por DOM id — mesmo check-in nunca aparece duas vezes)
-- display_name/1 e user_initials/1 usam apenas user.name, nunca o e-mail
-```
-```
-lib/bigz/habits.ex — create_checkin/2:
-- Após Repo.insert com sucesso, preloada user + habit
-- Phoenix.PubSub.broadcast(Bigz.PubSub, "checkins:community", {:new_checkin, checkin})
-  (broadcast só ocorre após confirmação do banco)
-```
+- `lib/bigz_web/live/community_live/index.ex`:
+  - `mount`: `if connected?(socket) → PubSub.subscribe(topic)` (só assina quando o WebSocket está estabelecido, não no HTTP inicial)
+  - `handle_info({:new_checkin, checkin}, socket) → stream_insert(socket, :checkins, checkin, at: 0)` (Phoenix streams: deduplication por DOM id — mesmo check-in nunca aparece duas vezes)
+  - `display_name/1` e `user_initials/1` usam apenas `user.name`, nunca o e-mail
+- `lib/bigz/habits.ex` — `create_checkin/2`:
+  - Após `Repo.insert` com sucesso, preloada `user + habit`
+  - `Phoenix.PubSub.broadcast(Bigz.PubSub, "checkins:community", {:new_checkin, checkin})` (broadcast só ocorre após confirmação do banco)
 
 ---
 

@@ -68,7 +68,22 @@ defmodule BigzWeb.Layouts do
 
   def app(assigns) do
     user = assigns[:current_scope] && assigns.current_scope.user
-    topbar_score = if user, do: Bigz.Habits.sum_user_points(assigns.current_scope), else: 0
+
+    topbar_score =
+      if user do
+        case Process.get(:topbar_score) do
+          nil ->
+            score = Bigz.Habits.sum_user_points(assigns.current_scope)
+            Process.put(:topbar_score, score)
+            score
+
+          score ->
+            score
+        end
+      else
+        0
+      end
+
     assigns = assigns |> assign(:user, user) |> assign(:topbar_score, topbar_score)
 
     ~H"""
@@ -133,7 +148,7 @@ defmodule BigzWeb.Layouts do
                 <span class="hidden sm:inline max-w-[10rem] truncate font-semibold">
                   {@user.name || @user.email}
                 </span>
-                 <.icon name="hero-chevron-down" class="size-4 opacity-60" />
+                <.icon name="hero-chevron-down" class="size-4 opacity-60" />
               </summary>
 
               <ul class="dropdown-content menu mt-2 w-60 rounded-box bg-base-100 border border-base-300 shadow-lg p-2 z-50">
