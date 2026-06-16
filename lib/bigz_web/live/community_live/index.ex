@@ -1,12 +1,5 @@
 defmodule BigzWeb.CommunityLive.Index do
-  @moduledoc """
-  RF09 — Community feed: real-time stream of check-ins from all users.
-
-  Subscribes to the PubSub topic `Habits.community_topic()` only when the
-  socket is connected (not during the initial HTTP render). New check-ins
-  are prepended to the stream via handle_info; Phoenix streams deduplicate
-  by DOM id so the same record never appears twice.
-  """
+  @moduledoc false
   use BigzWeb, :live_view
 
   alias Bigz.Habits
@@ -29,9 +22,6 @@ defmodule BigzWeb.CommunityLive.Index do
 
   @impl true
   def handle_info({:new_checkin, checkin}, socket) do
-    # Prepend the new check-in at the top of the feed.
-    # Phoenix streams keyed by record id ensure no duplication if the same
-    # struct arrives more than once (the stream replaces the existing entry).
     {:noreply, stream_insert(socket, :checkins, checkin, at: 0)}
   end
 
@@ -85,7 +75,7 @@ defmodule BigzWeb.CommunityLive.Index do
             id={id}
             class="bz-animate-fade-up flex items-start gap-4 rounded-box bg-base-100 border border-base-300 p-4 shadow-sm"
           >
-            <%!-- User avatar (initials only — never email) --%>
+            <%!-- User avatar --%>
             <span class="shrink-0 grid place-items-center size-10 rounded-full bg-secondary text-secondary-content text-sm font-bold uppercase">
               {user_initials(checkin.user)}
             </span>
@@ -127,8 +117,6 @@ defmodule BigzWeb.CommunityLive.Index do
     """
   end
 
-  # Renders the user's initials from their name only.
-  # Never falls back to the email to avoid exposing personal data.
   defp user_initials(%{name: name}) when is_binary(name) and name != "" do
     name
     |> String.split(~r/\s+/, trim: true)
@@ -139,8 +127,6 @@ defmodule BigzWeb.CommunityLive.Index do
 
   defp user_initials(_), do: "U"
 
-  # Returns the user's display name from their name field only.
-  # Never uses email, even as a fallback, to protect user privacy.
   defp display_name(%{name: name}) when is_binary(name) and name != "", do: name
   defp display_name(_), do: "Usuário"
 

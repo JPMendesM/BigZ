@@ -81,23 +81,12 @@ defmodule Bigz.Habits do
     Habit.changeset(habit, attrs)
   end
 
-  # PubSub topic for the community real-time feed (RF09).
   @community_topic "checkins:community"
 
-  @doc "Returns the PubSub topic used by the community feed."
   def community_topic, do: @community_topic
 
   @doc """
   Registers a check-in for the authenticated user on the given habit for today.
-
-  `checkin_date` is set server-side via `Date.utc_today/0`; "same day" is
-  evaluated in UTC. No user-supplied date or user_id is accepted.
-
-  Returns `{:ok, checkin}` on success or `{:error, changeset}` on failure.
-  The changeset error message for a duplicate is "Você já registrou este hábito hoje."
-
-  On success, broadcasts `{:new_checkin, checkin}` on the community PubSub topic
-  with user and habit preloaded. The broadcast fires only after a confirmed insert.
   """
   def create_checkin(current_scope, %Habit{} = habit) do
     result =
@@ -122,11 +111,6 @@ defmodule Bigz.Habits do
 
   @doc """
   Returns the most recent check-ins from all users for the community feed.
-
-  Uses a single JOIN query (no N+1) to preload user and habit. Only user.name
-  is rendered in the UI — email and auth fields are never exposed.
-
-  Ordered most recent first; limited to `limit` records (default 30).
   """
   def list_community_checkins(limit \\ 30) do
     Repo.all(
@@ -176,15 +160,8 @@ defmodule Bigz.Habits do
     )
   end
 
-  # ─── RF08 ─────────────────────────────────────────────────────────────────
-
   @doc """
   Returns the total points earned by the user across all their check-ins.
-
-  This is the authoritative score for display. The `users.score` column
-  exists in the schema but is never updated; all score queries go through
-  the checkins→habits join instead, preventing two inconsistent sources
-  of truth.
   """
   def sum_user_points(current_scope) do
     user_id = current_scope.user.id
@@ -198,10 +175,7 @@ defmodule Bigz.Habits do
   end
 
   @doc """
-  Returns the points earned by the user in the current ISO week.
-
-  Weeks run Monday–Sunday in UTC. The boundary is computed in UTC
-  regardless of the user's local timezone.
+  Returns the points earned by the user in the current ISO week (Monday-Sunday, UTC).
   """
   def sum_user_points_this_week(current_scope) do
     user_id = current_scope.user.id
@@ -219,7 +193,7 @@ defmodule Bigz.Habits do
   end
 
   @doc """
-  Returns the number of check-ins the user registered in the current ISO week (Monday–Sunday, UTC).
+  Returns the number of check-ins the user registered in the current ISO week (Monday-Sunday, UTC).
   """
   def count_user_checkins_this_week(current_scope) do
     user_id = current_scope.user.id
@@ -238,10 +212,7 @@ defmodule Bigz.Habits do
   end
 
   @doc """
-  Returns the user's check-ins ordered most recent first, with the
-  associated habit preloaded in a single JOIN query (no N+1).
-
-  `limit` caps the result set (default 50).
+  Returns the user's check-ins ordered most recent first, with the associated habit preloaded.
   """
   def list_user_checkins(current_scope, limit \\ 50) do
     user_id = current_scope.user.id
@@ -258,18 +229,14 @@ defmodule Bigz.Habits do
 
   @doc """
   Returns a weekly summary of points and check-in count for the user's
-  last `weeks` ISO weeks (Monday–Sunday, UTC), including the current week.
+  last `weeks` ISO weeks (Monday-Sunday, UTC), including the current week.
 
-  Result is a chronological list (oldest → newest) of maps:
+  Result is a chronological list of maps:
     %{week_start: ~D[...], points: integer, count: integer}
-
-  Weeks with no check-ins appear with points=0 and count=0.
-  The grouping runs in Elixir (avoids PostgreSQL-specific date_trunc).
   """
   def list_weekly_summaries(current_scope, weeks \\ 6) do
     user_id = current_scope.user.id
     today = Date.utc_today()
-    # Date.day_of_week/1 returns 1 (Mon) … 7 (Sun) per ISO 8601
     cur_week_start = Date.add(today, -(Date.day_of_week(today) - 1))
     since = Date.add(cur_week_start, -(weeks - 1) * 7)
 
@@ -281,11 +248,9 @@ defmodule Bigz.Habits do
           select: {c.checkin_date, h.points}
       )
 
-    # Full sequence of Monday dates for the requested range (oldest first)
     week_starts =
       Enum.map((weeks - 1)..0//-1, fn i -> Date.add(cur_week_start, -i * 7) end)
 
-    # Group raw rows by their week's Monday
     by_week =
       Enum.group_by(rows, fn {date, _pts} ->
         Date.add(date, -(Date.day_of_week(date) - 1))
@@ -302,7 +267,6 @@ defmodule Bigz.Habits do
     end)
   end
 
-  # Returns the {start, end} Date pair for the current ISO week (Mon–Sun, UTC).
   defp current_week_range do
     today = Date.utc_today()
     start = Date.add(today, -(Date.day_of_week(today) - 1))

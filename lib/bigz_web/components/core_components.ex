@@ -303,8 +303,6 @@ defmodule BigzWeb.CoreComponents do
   @doc """
   Renders a statistic card.
 
-  Reusable building block for the overview and the future dashboard (RF08).
-
   ## Examples
 
       <.stat_card label="Pontuação" value={@score} icon="hero-bolt" tone="success" />

@@ -13,7 +13,6 @@ defmodule BigzWeb.HabitLive.Index do
   def handle_params(params, _url, socket) do
     category = Map.get(params, "category")
 
-    # Pass current_scope as the first argument as required by guidelines
     habits = Habits.list_habits(socket.assigns.current_scope, %{"category" => category})
 
     socket =
