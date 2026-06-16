@@ -89,5 +89,3 @@ O BigZ tem como objetivo auxiliar usuários na construção de hábitos saudáve
 * Ranking de usuários
 * Feed da comunidade
 * Estatísticas e gráficos
-
-teste
