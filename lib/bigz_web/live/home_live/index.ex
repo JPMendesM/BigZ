@@ -1,11 +1,5 @@
 defmodule BigzWeb.HomeLive.Index do
-  @moduledoc """
-  RF08 — Personal dashboard: check-in history and accumulated score per week.
-
-  Weeks are defined as ISO weeks (Monday–Sunday) in UTC. All score figures
-  are derived from the checkins→habits join — the `users.score` column is
-  intentionally ignored to keep a single source of truth.
-  """
+  @moduledoc false
   use BigzWeb, :live_view
 
   alias Bigz.Habits
@@ -53,7 +47,7 @@ defmodule BigzWeb.HomeLive.Index do
             <.icon name="hero-check-circle" class="size-5" /> Registrar atividade
           </.link>
         </div>
-         <%!-- Stat cards — scores derived from check-ins, not users.score --%>
+         <%!-- Stat cards --%>
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <.stat_card
             label="Pontuação total"
